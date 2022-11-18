@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>门派后山闲置弟子调整</title>
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	<style>
+		.form {
+			width: 380px;
+		}
+		.t-center {
+			text-align: center
+		}
+	</style>
+</head>
+<body>
+	<div class="wrap" id="app">
+		<el-form class="form" ref="form" :model="form" label-width="100px">
+			<el-form-item label="农场弟子数">
+				<el-input type="number" min="0" v-model="form.num1"></el-input>
+			</el-form-item>
+			<el-form-item label="兽场弟子数">
+				<el-input type="number" min="0" v-model="form.num2"></el-input>
+			</el-form-item>
+			<el-form-item label="药田弟子数">
+				<el-input type="number" min="0" v-model="form.num3"></el-input>
+			</el-form-item>
+			<el-form-item label="外练丹药">
+				<el-radio v-model="form.danyao" label="0">炼筋丹</el-radio>
+				<el-radio v-model="form.danyao" label="1">断骨丸</el-radio>
+				<el-radio v-model="form.danyao" label="2">淬皮散</el-radio>
+			</el-form-item>
+			<el-form-item label="食物限制">
+				<el-radio v-model="form.checked" label="1">忽略</el-radio>
+  			<el-radio v-model="form.checked" label="2">限制</el-radio>
+			</el-form-item>
+			<el-form-item label="">
+				<el-button @click="clickBtn">计算</el-button>
+			</el-form-item>
+			<div class="t-center">{{str}}</div>
+		</el-form>
+	</div>
+</body>
+<script>
+	new Vue({
+		el: '#app',
+		data: function() {
+			return { 
+				visible: false,
+				form: {
+					num1: 1099,
+					num2: 245,
+					num3: 310,
+					danyao: "1",
+					checked: "1",
+				},
+				results: "",
+				foodNumList: [4,3,2],
+				yaocaiNum: [[12000,12000, 10000],[15000,10000, 11000],[10000,16000, 9000]],
+				str: ""
+			}
+		},
+		mounted () {
+			this.clickBtn()
+		},
+		methods: {
+			clickBtn () {
+				this.results = ""
+				if (this.form.checked == 2 && this.form.num1 == 0) {
+					this.results = "限制食物时请输入农场弟子数!"
+					this.$message.error(this.results);
+					return false
+				}
+				const pro = this.yaocaiNum[this.form.danyao]
+				const num1 = this.form.num2 * pro[0]
+				const num2 = this.form.num3 * pro[1]
+				const max = num1 > num2 ? num1 : num2
+				const num3 = max / pro[0]
+				const num4 = max / pro[1]
+				const mu1 = max / pro[2]
+				if(this.form.checked == 1) {
+					let str = ""
+					if(this.form.num2 == num3) {
+						str = "需要提升药田建筑等级"
+					} else {
+						str = "需要提升兽场建筑等级"
+					}
+					this.str = `需要兽场弟子${num3}个,药田弟子${num4}个,${str}`
+				} else {
+					const maxFood = this.form.num1
+					const max2Food = num3 * this.foodNumList[0] + num4 * this.foodNumList[1] + mu1 * this.foodNumList[2]
+					const foodPro = max2Food / maxFood
+					const num5 = Math.round(num3 / foodPro)
+					const num6 = Math.round(num4 / foodPro)
+					const mu2 = Math.round(mu1 / foodPro)
+					this.str = `需要兽场弟子${num5}个,药田弟子${num6}个,林场弟子${mu2}个`
+				}
+				
+			}
+		}
+	})
+</script>
+</html>
