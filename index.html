@@ -78,8 +78,8 @@
 				const num1 = this.form.num2 * pro[0]
 				const num2 = this.form.num3 * pro[1]
 				const max = num1 > num2 ? num1 : num2
-				const num3 = max / pro[0]
-				const num4 = max / pro[1]
+				const num3 = Math.round(max / pro[0])
+				const num4 = Math.round(max / pro[1])
 				const mu1 = max / pro[2]
 				if(this.form.checked == 1) {
 					let str = ""
