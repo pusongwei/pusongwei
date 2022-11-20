@@ -68,6 +68,7 @@
 		},
 		methods: {
 			clickBtn () {
+				const arr = ["炼筋丹", "断骨丸", "淬皮散"]
 				this.results = ""
 				if (this.form.checked == 2 && this.form.num1 == 0) {
 					this.results = "限制食物时请输入农场弟子数!"
@@ -78,9 +79,12 @@
 				const num1 = this.form.num2 * pro[0]
 				const num2 = this.form.num3 * pro[1]
 				const max = num1 > num2 ? num1 : num2
-				const num3 = Math.round(max / pro[0])
-				const num4 = Math.round(max / pro[1])
-				const mu1 = max / pro[2]
+				const time1 = pro[0] / this.form.num2
+				const time2 = pro[1] / this.form.num3
+				const time3 = time1 > time2 ? time2 : time1
+				const num3 = Math.round(pro[0] /  time3)
+				const num4 = Math.round(pro[1] / time3)
+				const mu1 = pro[2] / time3
 				if(this.form.checked == 1) {
 					let str = ""
 					if(this.form.num2 == num3) {
@@ -88,7 +92,7 @@
 					} else {
 						str = "需要提升兽场建筑等级"
 					}
-					this.str = `需要兽场弟子${num3}个,药田弟子${num4}个,${str}`
+					this.str = `需要兽场弟子${num3}个,药田弟子${num4}个,${str},生产一个${arr[this.form.danyao]}大约需要${Math.round(time3 * 2)}分钟`
 				} else {
 					const maxFood = this.form.num1
 					const max2Food = num3 * this.foodNumList[0] + num4 * this.foodNumList[1] + mu1 * this.foodNumList[2]
@@ -96,7 +100,7 @@
 					const num5 = Math.round(num3 / foodPro)
 					const num6 = Math.round(num4 / foodPro)
 					const mu2 = Math.round(mu1 / foodPro)
-					this.str = `需要兽场弟子${num5}个,药田弟子${num6}个,林场弟子${mu2}个`
+					this.str = `需要兽场弟子${num5}个,药田弟子${num6}个,林场弟子${mu2}个,生产一个${arr[this.form.danyao]}大约需要${Math.round(time3 * 2 / foodPro)}分钟`
 				}
 				
 			}
