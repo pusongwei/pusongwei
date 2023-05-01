@@ -21,7 +21,7 @@ body,
 .header-left {
   width: 255px;
   display: flex;
-  -webkit-font-smoothing: subpixel-antialiased;
+  transform: translateZ(0);
 }
 .header-left-icon1 img {
   width: 100px;
@@ -34,7 +34,7 @@ body,
 .header-right {
   display: flex;
   flex: 1;
-  -webkit-font-smoothing: subpixel-antialiased;
+  transform: translateZ(0);
 }
 .header-right-left {
   flex: 1;
