@@ -21,6 +21,7 @@ body,
 .header-left {
   width: 255px;
   display: flex;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 .header-left-icon1 img {
   width: 100px;
@@ -33,6 +34,7 @@ body,
 .header-right {
   display: flex;
   flex: 1;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 .header-right-left {
   flex: 1;
