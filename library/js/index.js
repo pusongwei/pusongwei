@@ -117,7 +117,7 @@ $(document).ready(() => {
   })
 
   $(window).on("scroll", function () {
-    if ($(window).innerWidth() <= 1024) {
+    if ($('.main-top').css('display') != 'flex') {
       if ($(".main")[0].getBoundingClientRect().top <= 0) {
         $(".header-right-right").css("display", "flex")
         $(".header-left-icon2").fadeIn(500)
