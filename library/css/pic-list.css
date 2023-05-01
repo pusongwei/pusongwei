@@ -1,0 +1,129 @@
+.pic-list {
+	width: calc(100% + 12px);
+	margin-left: -6px;
+}
+
+
+.bricks-wrapper .grid-sizer, .bricks-wrapper .brick {
+    width: 25%;
+}
+.bricks-wrapper .brick {
+	padding: 6px;
+}
+.entry-thumb img {
+	width: 100%;
+	-moz-transition: all 0.3s ease-in-out;
+	-o-transition: all 0.3s ease-in-out;
+	-webkit-transition: all 0.3s ease-in-out;
+	-ms-transition: all 0.3s ease-in-out;
+	transition: all 0.3s ease-in-out;
+}
+.pic-title {
+	position: absolute;
+	top: 22px;
+	left: 25px;
+	opacity: 0;
+	z-index: 3;
+	transition: all 0.2s ease-in-out;
+}
+.pic-title1 {
+	color: #fff;
+	font-weight: bold;
+	font-size: 14px;
+}
+.pic-title2 {
+	color: #fff;
+	font-size: 12px;
+	margin-top: 8px;
+}
+.pic-title3 {
+	color: #fff;
+	font-weight: bold;
+	font-size: 12px;
+}
+.entry-thumb {
+	overflow: hidden;
+	position: relative;
+}
+.entry-thumb .mark-item {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background: rgba(0,0,0,0);
+	z-index: 2;
+	-moz-transition: all 0.3s ease-in-out;
+	-o-transition: all 0.3s ease-in-out;
+	-webkit-transition: all 0.3s ease-in-out;
+	-ms-transition: all 0.3s ease-in-out;
+	transition: all 0.3s ease-in-out;
+}
+.brick:hover .entry-thumb .mark-item {
+	background: rgba(0,0,0,.3);
+}
+.brick:hover .entry-thumb .pic-title {
+	opacity: 1;
+}
+/*列表图片放大*/
+/*.brick:hover .entry-thumb img {
+	transform: scale(1.05);
+}*/
+
+.artists-life-title div {
+	width: 100%;
+	font-size: 18px;
+	font-weight: bold;
+	color: #000;
+	position: fixed;
+	background: #fff;
+	padding-bottom: 20px;
+}
+.artists-life-title {
+	height: 44px;
+}
+.artists-life-intr {
+	font-size: 12px;
+	font-weight: 400;
+	color: #000;
+}
+.artists-life-intr p {
+	line-height: 185%;
+	color: #666;
+}
+.artists-awards {
+	margin-top: 35px;
+	padding-bottom: 150px;
+}
+.artists-awards-title {
+	font-size: 14px;
+	font-weight: bold;
+	color: #000;
+}
+.artists-awards-title-list {
+	margin-top: 35px;
+}
+.artists-awards-title-list .artists-awards-title {
+	margin-bottom: 10px;
+}
+.awards-time {
+	font-size: 12px;
+	font-weight: 400;
+	color: #000;
+	line-height: 185%;
+}
+.awards-item {
+	display: flex;
+	margin-top: 10px;
+	font-size: 12px;
+	font-weight: 400;
+	color: #000;
+}
+.awards-con {
+	margin-left: 30px;
+}
+.awards-item p {
+	cursor: default;
+	line-height: 185%;
+	color: #666;
+}
