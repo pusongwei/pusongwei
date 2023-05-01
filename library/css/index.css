@@ -597,9 +597,9 @@ body,
   .header-right-right-icon2 {
     display: none;
   }
-  /* .header-right-right {
+  .header-right-right {
     display: none;
-  } */
+  }
   .box-phone {
     display: flex;
   }
