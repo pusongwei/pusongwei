@@ -123,7 +123,7 @@ $(document).ready(() => {
         $(".header-left-icon2").css("display", "block")
       } else {
         $(".header-right-right").fadeOut(500)
-        $(".header-left-icon2").fadeOut(500)
+        // $(".header-left-icon2").fadeOut(500)
       }
     } else {
       if ($(".main")[0].getBoundingClientRect().top <= 0) {
