@@ -603,9 +603,9 @@ body,
   .box-phone {
     display: flex;
   }
-  .header-left-icon2 {
+  /* .header-left-icon2 {
     display: none;
-  }
+  } */
   .main {
     margin-top: 0;
     padding: 0;
