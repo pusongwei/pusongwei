@@ -118,13 +118,13 @@ $(document).ready(() => {
 
   $(window).on("scroll", function () {
     if ($('.main-top').css('display') != 'flex') {
-      if ($(".main")[0].getBoundingClientRect().top <= 0) {
-        $(".header-right-right").css("display", "flex")
-        $(".header-left-icon2").fadeIn(500)
-      } else {
-        $(".header-right-right").fadeOut(500)
-        $(".header-left-icon2").fadeOut(500)
-      }
+      // if ($(".main")[0].getBoundingClientRect().top <= 0) {
+      //   $(".header-right-right").css("display", "flex")
+      //   $(".header-left-icon2").fadeIn(500)
+      // } else {
+      //   $(".header-right-right").fadeOut(500)
+      //   $(".header-left-icon2").fadeOut(500)
+      // }
     } else {
       if ($(".main")[0].getBoundingClientRect().top <= 0) {
         $(".main").addClass("box-bg")
