@@ -120,10 +120,10 @@ $(document).ready(() => {
     if ($('.main-top').css('display') != 'flex') {
       if ($(".main")[0].getBoundingClientRect().top <= 0) {
         $(".header-right-right").css("display", "flex")
-        $(".header-left-icon2").css("display", "inline-block")
+        // $(".header-left-icon2").css("display", "inline-block")
       } else {
         $(".header-right-right").fadeOut(500)
-        $(".header-left-icon2").css("display", "none")
+        $(".header-left-icon2").fadeOut(500)
       }
     } else {
       if ($(".main")[0].getBoundingClientRect().top <= 0) {
