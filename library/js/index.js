@@ -22,12 +22,14 @@ $(document).ready(() => {
   isplay = false
   $(".main-video").click(() => {
     if (isplay) {
+      $(this).find('video').trigger('pause');
       $(".main-video img").show()
+      isplay = false
     } else {
       $(".main-video").find('video').trigger('play');
       $(".main-video img").hide()
+      isplay = true
     }
-    isplay = !isplay
   })
 
   // 导航点击事件
@@ -36,11 +38,15 @@ $(document).ready(() => {
       $(".header-right").removeClass("header-right-on")
       $(".header-phone").removeClass("header-right-on")
       $(".header-left-icon2").show()
+      if ($(window).innerWidth() <= 1024) {
+        $('html').css({'overflow-y': 'scroll'});
+      }
     } else {
       $(".header-right").addClass("header-right-on")
       $(".header-phone").addClass("header-right-on")
       if ($(window).innerWidth() <= 1024) {
         $(".header-left-icon2").hide()
+        $('html').css({'overflow-y': 'hidden'});
       }
     }
   }
@@ -112,11 +118,9 @@ $(document).ready(() => {
       if ($(".main")[0].getBoundingClientRect().top <= 0) {
         $(".header-right-right").css("display", "flex")
         $(".header-left-icon2").fadeIn(500)
-        $('html').css({'overflow-y': 'hidden'});
       } else {
         $(".header-right-right").fadeOut(500)
         $(".header-left-icon2").fadeOut(500)
-        $('html').css({'overflow-y': 'scroll'});
       }
     } else {
       if ($(".main")[0].getBoundingClientRect().top <= 0) {
