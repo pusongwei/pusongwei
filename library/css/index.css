@@ -178,7 +178,6 @@ body,
   right: 0;
   top: 0;
   bottom: 0;
-  overflow: hidden;
 }
 .box1-video video,
 .box1-video img {
@@ -320,7 +319,6 @@ body,
 }
 .main-video video {
   width: 100%;
-  overflow: hidden;
 }
 .main-video img {
   position: absolute;
@@ -759,5 +757,25 @@ body,
 @media all and (max-width: 450px) {
   .poster-item {
     width: 100%;
+  }
+}
+@media all and (max-width: 1550px) {
+  .main-right-head {
+    font-size: 35px;
+  }
+}
+@media all and (max-width: 1450px) {
+  .main-right-head {
+    font-size: 30px;
+  }
+}
+@media all and (max-width: 1350px) {
+  .main-right-head {
+    font-size: 25px;
+  }
+}
+@media all and (max-width: 1160px) {
+  .main-right-head {
+    font-size: 20px;
   }
 }
