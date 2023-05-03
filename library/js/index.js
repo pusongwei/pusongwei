@@ -112,9 +112,11 @@ $(document).ready(() => {
       if ($(".main")[0].getBoundingClientRect().top <= 0) {
         $(".header-right-right").css("display", "flex")
         $(".header-left-icon2").fadeIn(500)
+        $('html').css({'overflow-y': 'hidden'});
       } else {
         $(".header-right-right").fadeOut(500)
         $(".header-left-icon2").fadeOut(500)
+        $('html').css({'overflow-y': 'scroll'});
       }
     } else {
       if ($(".main")[0].getBoundingClientRect().top <= 0) {
