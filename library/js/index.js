@@ -30,9 +30,6 @@ $(document).ready(() => {
     isplay = !isplay
   })
 
-  function bodyScroll(event){
-    event.preventDefault();
-  }
   // 导航点击事件
   function rightIconClick () {
     if ($(".header-right").hasClass("header-right-on")) {
@@ -93,10 +90,7 @@ $(document).ready(() => {
     $(".video-clone").css("height", "60px");
   }
   
-  $(".header-phone").on("touchstart",function (e) {
-    e.stopPropagation();
-		e.preventDefault();
-  })
+  
   $(window).on("resize", function () {
     if ($(window).innerWidth() > 1024) {
       $('.img-box').css('height',$(window).innerWidth() * 87 / 190 + "px");
