@@ -12,11 +12,11 @@ $(document).ready(() => {
   })
   $(".swiper-wrapper").click(() => {
     $(".video-box").fadeIn(500)
-    $(".video-clone").hide()
+    $(".video-clone").css("opacity", "0")
     setTimeout(() => {
       $(".video-wrap").find('video').trigger('play');
       $(".video-clone").css("height", $(".video-wrap video").height());
-      $(".video-clone").show()
+      $(".video-clone").css("opacity", "1")
     }, 1000)
     $("html,body").addClass('no-scroll');
   })
@@ -29,9 +29,7 @@ $(document).ready(() => {
   isplay = false
   $(".main-video").click(() => {
     if (isplay) {
-      $(this).find('video').trigger('pause');
-      $(".main-video img").show()
-      isplay = false
+      
     } else {
       $(".main-video").find('video').trigger('play');
       $(".main-video img").hide()
