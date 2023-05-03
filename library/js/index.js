@@ -5,12 +5,19 @@ $(document).ready(() => {
   
   $(".box-phone").click(() => {
     $(".video-box").fadeIn(500)
-    $(".video-wrap").find('video').trigger('play');
+    setTimeout(() => {
+      $(".video-wrap").find('video').trigger('play');
+    }, 1000)
     $("html,body").addClass('no-scroll');
   })
   $(".swiper-wrapper").click(() => {
     $(".video-box").fadeIn(500)
-    $(".video-wrap").find('video').trigger('play');
+    $(".video-clone").hide()
+    setTimeout(() => {
+      $(".video-wrap").find('video').trigger('play');
+      $(".video-clone").css("height", $(".video-wrap video").height());
+      $(".video-clone").show()
+    }, 1000)
     $("html,body").addClass('no-scroll');
   })
   $(".video-clone").click(() => {
