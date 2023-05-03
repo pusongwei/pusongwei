@@ -24,11 +24,11 @@ $(document).ready(() => {
   isplay = false
   $(".main-video").click(() => {
     if (isplay) {
-      $(this).find('video').trigger('play');
+      $(this).find('video').trigger('pause');
       $(".main-video img").show()
     } else {
-      $(".main-video video")[0].play()
-      $(this).find('video').trigger('pause');
+      $(this).find('video').trigger('play');
+      $(".main-video img").hide()
     }
     isplay = !isplay
   })
