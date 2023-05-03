@@ -29,9 +29,11 @@ $(document).ready(() => {
   isplay = false
   $(".main-video").click(() => {
     if (isplay) {
-      
+      $(".main-video video").trigger('pause');
+      $(".main-video img").show()
+      isplay = false
     } else {
-      $(".main-video").find('video').trigger('play');
+      $(".main-video video").trigger('play');
       $(".main-video img").hide()
       isplay = true
     }
@@ -99,6 +101,7 @@ $(document).ready(() => {
   } else {
     $('.box-phone').css('height',$(".box-phone").innerWidth() + "px");
     $(".video-clone").css("height", "60px");
+    $(".main-video video").attr("controls", "controls")
   }
   
   
@@ -114,6 +117,7 @@ $(document).ready(() => {
       $('.main').css('marginTop',0);
       $('.box-phone').css('height',$(".box-phone").innerWidth() + "px");
       $(".video-clone").css("height", "60px");
+      $(".main-video video").attr("controls", "controls")
     }
     
   })
