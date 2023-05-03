@@ -24,7 +24,6 @@ $(document).ready(() => {
     if (isplay) {
       $(".main-video img").show()
     } else {
-      console.log($(".main-video").find('video')[0])
       $(".main-video").find('video').trigger('play');
       $(".main-video img").hide()
     }
