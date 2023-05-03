@@ -5,19 +5,17 @@ $(document).ready(() => {
   
   $(".box-phone").click(() => {
     $(".video-box").fadeIn(500)
-    $(".video-box video")[0].currentTime = 0;
-    $(".video-box video")[0].play()
+    $(this).find('video').trigger('play');
     $("html,body").addClass('no-scroll');
   })
   $(".swiper-wrapper").click(() => {
     $(".video-box").fadeIn(500)
-    $(".video-box video")[0].currentTime = 0;
-    $(".video-box video")[0].play()
+    $(this).find('video').trigger('pause');
     $("html,body").addClass('no-scroll');
   })
   $(".video-clone").click(() => {
     $(".video-box").fadeOut(500)
-    $(".video-box video")[0].pause()
+    $(this).find('video').trigger('pause');
     $("html,body").removeClass('no-scroll');
   })
   // 正文视频点击
