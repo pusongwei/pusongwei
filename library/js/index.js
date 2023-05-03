@@ -10,7 +10,7 @@ $(document).ready(() => {
   })
   $(".swiper-wrapper").click(() => {
     $(".video-box").fadeIn(500)
-    $(".video-wrap").find('video').trigger('pause');
+    $(".video-wrap").find('video').trigger('play');
     $("html,body").addClass('no-scroll');
   })
   $(".video-clone").click(() => {
