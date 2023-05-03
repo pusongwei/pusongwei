@@ -22,10 +22,10 @@ $(document).ready(() => {
   isplay = false
   $(".main-video").click(() => {
     if (isplay) {
-      $(this).find('video').trigger('pause');
       $(".main-video img").show()
     } else {
-      $(this).find('video').trigger('play');
+      console.log($(".main-video").find('video')[0])
+      $(".main-video").find('video').trigger('play');
       $(".main-video img").hide()
     }
     isplay = !isplay
