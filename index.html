@@ -1,226 +1,132 @@
 <!DOCTYPE html>
-<html lang="ch">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="robots" content="index,follow" />
-    <meta name="author" content="国际预科-中央美术学院;" />
-    <meta name="identifier-url" content="" />
-    <meta name="generator" content="CUBE CMS " />
-    <meta name="Rating" content="General" />
-    <meta name="revisit-after" content="1 Days" />
-    <meta name="doc-class" content="Living Document" />
-    <meta name="description" content="中央美术学院国际预科是中央美术学院独家主办，美院花家地本部教学住宿，面向全球培养本科美术留学人才的项目。第六届招生火热进行中！电话：010-64771017，64771363。" />
-    <meta name="keywords" content="中央美术学院, 美院, 央美, 中央美院, 艺术, 中国美术, 艺术高校" />
-    <meta name="abstract" content="中央美术学院, 美院, 央美, 中央美院, 艺术, 中国美术, 艺术高校" />
-    <meta http-equiv="cache-control" content="max-age=86400" />
-    <meta name="renderer" content="webkit" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Home</title>
-    <link rel="stylesheet" href="./library/css/public.css" />
-    <link rel="stylesheet" href="./library/css/index.css" />
-  </head>
-  <script src="./library/js/jquery-2.1.3.min.js"></script>
-  <script>
-    function totaltime() {
-      $(".video-clone").css("height", $(".video-wrap video").height());
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vjmap demo</title>
+    <link rel="stylesheet" type="text/css" href="https://vjmap.com/demo/js/vjmap/vjmap.min.css">
+    <script type="text/javascript" src="https://vjmap.com/demo/js/vjmap/vjmap.min.js"></script>
+    <style>
+        .vjmapgis-popup-content {
+            padding: 0px;
+        }
+    </style>
+</head>
+<body style=" margin: 0;overflow: hidden;background-color:white;font-size: 16px">
+<div id="map" style="left:0;right:0;top:0;bottom:0;position: absolute;z-index: 0;"></div>
+</body>
+<script>
+    (async () => {
+        document.body.style.background = "#022B4F"; // 背景色改为深色
+        const env = {
+            serviceUrl: "https://vjmap.com/server/api/v1",
+            accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwiVXNlcm5hbWUiOiJyb290MSIsIk5pY2tOYW1lIjoicm9vdDEiLCJBdXRob3JpdHlJZCI6InJvb3QiLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjoxOTQyMzA1MjQxLCJpc3MiOiJ2am1hcCIsIm5iZiI6MTYyNjk0NDI0MX0.29OAA4Cnjtw780VxIxWqduLtszp1EtpSNHAmWjiL_OM",
+            exampleMapId: "sys_zp"
+        };
+        try {
+            // --拉伸多边形--
+            // 地图服务对象
+            let svc = new vjmap.Service(env.serviceUrl, env.accessToken)
+            // 打开地图
+            let res = await svc.openMap({
+                mapid: env.exampleMapId, // 地图ID
+                mapopenway: vjmap.MapOpenWay.GeomRender, // 以几何数据渲染方式打开
+                style: vjmap.openMapDarkStyle() // div为深色背景颜色时，这里也传深色背景样式
+            })
+            if (res.error) {
+                // 如果打开出错
+                message.error(res.error)
+                return;
+            }
+            // 获取地图范围
+            let mapExtent = vjmap.GeoBounds.fromString(res.bounds);
+            // 根据地图范围建立几何投影坐标系
+            let prj = new vjmap.GeoProjection(mapExtent);
+
+            // 地图对象
+            let map = new vjmap.Map({
+                container: 'map', // DIV容器ID
+                style: svc.vectorStyle(), // 样式，这里是栅格样式
+                center: prj.toLngLat(mapExtent.center()), // 设置地图中心点
+                zoom: 1, // 设置地图缩放级别,
+                pitch: 0, // 倾斜角度
+                renderWorldCopies: false // 不显示多屏地图
+            });
+
+            // 关联服务对象和投影对象
+            map.attach(svc, prj);
+            // 根据地图本身范围缩放地图至全图显示
+            //map.fitMapBounds();
+            await map.onLoad(); // 等待地图加载完成
+
+            addMousePositionControl(map); // 鼠标位置控件
+
+            addMarker(map); // 增加一个marker
+
+            addDrawControl(map); // 增加绘图控件
+			window.map = map;
+        }
+        catch (e) {
+            console.error(e);
+        }
+    })();
+
+    function addMousePositionControl(map) {
+        let mousePositionControl = new vjmap.MousePositionControl({
+            showLatLng: true
+        });
+        map.addControl(mousePositionControl, "bottom-left");
     }
-  </script>
-  <body>
-    <div class="wrap">
-      <div class="header-phone">
-        <div class="header-phone-wrap">
-          <div class="header-phone-top">
-            <div class="header-phone-icon">
-              <img src="./library/images/icon/icon4.png" />
-            </div>
-            <div class="header-phone-list">
-              <a href="#">数字媒体艺术</a>
-              <a href="#">视觉传达设计</a>
-              <a href="#">环境艺术设计</a>
-              <a href="#">优秀作品</a>
-              <a href="#">真题项目</a>
-              <a href="#" class="header-phone-on">展区首页</a>
-            </div>
-          </div>
-          <div class="header-phone-bottom">EAaD GRADUATION EXHIBITION .2023</div>
-        </div>
-      </div>
-      <div class="header">
-        <div class="header-left">
-          <a href="#" class="header-left-icon1">
-            <img src="./library/images/icon/icon1.png" />
-          </a>
-          <a href="#" class="header-left-icon2">
-            <img src="./library/images/icon/icon2.png" />
-          </a>
-        </div>
-        <div class="header-right">
-          <div class="header-right-left">
-            <a href="#">数字媒体艺术</a>
-            <a href="#">环境艺术设计</a>
-            <a href="#">视觉传达设计</a>
-            <span></span>
-            <a href="#">优秀作品</a>
-            <a href="#">真题项目</a>
-          </div>
-          <div class="header-right-right">
-            <div class="header-right-right-head">
-              <div class="header-right-right-head-item">优秀作品</div>
-              <div class="header-right-right-head-item">快捷入口 ></div>
-            </div>
-            <div class="header-right-right-icon">
-              <div class="header-right-right-icon-item header-right-right-icon-top"></div>
-              <div class="header-right-right-icon-item header-right-right-icon-bottom"></div>
-            </div>
-            <a heaf="#" class="header-right-right-icon2">
-              <img src="./library/images/icon/icon3.png" />
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="video-box">
-        <div class="video-wrap">
-          <video controls oncanplay="totaltime()">
-            <source src="https://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4" />
-          </video>
-          <div class="video-clone">
-            <svg t="1681632208875" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2777" width="60" height="60"><path d="M571.733333 512l268.8-268.8c17.066667-17.066667 17.066667-42.666667 0-59.733333-17.066667-17.066667-42.666667-17.066667-59.733333 0L512 452.266667 243.2 183.466667c-17.066667-17.066667-42.666667-17.066667-59.733333 0-17.066667 17.066667-17.066667 42.666667 0 59.733333L452.266667 512 183.466667 780.8c-17.066667 17.066667-17.066667 42.666667 0 59.733333 8.533333 8.533333 19.2 12.8 29.866666 12.8s21.333333-4.266667 29.866667-12.8L512 571.733333l268.8 268.8c8.533333 8.533333 19.2 12.8 29.866667 12.8s21.333333-4.266667 29.866666-12.8c17.066667-17.066667 17.066667-42.666667 0-59.733333L571.733333 512z" fill="#2c2c2c" p-id="2778"></path></svg>
-          </div>
-        </div>
-      </div>
-      <div class="box-phone">
-        <!-- <video preload="auto" autoplay loop muted="muted">
-          <source src="./library/media/1.mp4" type="video/mp4" />
-        </video> -->
-        <img src="./library/images/1.jpeg" alt="" />
-      </div>
-      <div class="img-box box1"></div>
-      <div class="box">
-        <div class="box1">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide swiper-slide-on">
-              <img src="./library/images/banner1.png" alt="" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./library/images/banner2.png" alt="" />
-            </div>
-            <img class="spot_vieo_play" src="./library/images/icon/spot_vieo_play.png" alt="" />
-          </div>
-          <div class="box1-video">
-            <video preload="auto" autoplay loop muted="muted">
-              <source src="./library/media/1.mp4" type="video/mp4" />
+
+    function addMarker(map) {
+
+        // create the popup
+        let popup = new vjmap.Popup({ closeOnClick: false, offset: 5 })
+            .setHTML(`
+            <video width="100%" height="100%"  controls="controls" autoplay="autoplay" muted loop>
+              <source src="https://vjmap.com/demo/static/assets/video/butterfly.mp4" type="video/mp4" />
             </video>
-            <!-- <img src="./library/images/video_cover.jpg" alt="" /> -->
-          </div>
-        </div>
-      </div>
-      <div class="main">
-        <div class="main-box">
-          <div class="main-box-img main-box-left">
-            <img src="./library/images/h_introArea_Leftbg.png" alt="" />
-          </div>
-          <div class="main-box-img main-box-right">
-            <img src="./library/images/h_introArea_Rightbg.png" alt="" />
-          </div>
-          <div class="main-top">
-            <div class="main-left">
-              <img src="./library/images/icon/icon4.png" alt="" />
-            </div>
-            <div class="main-right">
-              <div class="main-right-head">EAaD GRADUATION EXHIBITION.2023</div>
-              <div class="main-right-title">
-                INTRODUCTION
-                <br />
-                EAaD GRADUATION EXHIBITION.2023
-              </div>
-              <div class="main-right-remark">艾德设计学院 2023毕业作品展</div>
-              <div class="main-right-intr">展览简介</div>
-            </div>
-          </div>
-          <div class="main-video">
-            <video poster="./library/images/video_cover.jpg">
-              <source src="https://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4" />
-            </video>
-            <img src="./library/images/icon/intro_v_play.png" alt="" />
-          </div>
-          <div class="main-content">
-            <div class="main-content-left">
-              <div class="main-content-left-title1">前言</div>
-              <div class="main-content-left-title2">
-                EAaD Graduation Exhibition 2023
-                <br />
-                Preface
-              </div>
-              <div class="main-content-left-title3">Tony Brown</div>
-            </div>
-            <div class="main-content-right">
-              <div class="main-content-right-ch">
-                <p>“Design matters！” 似乎是后疫情时代带着某种坚定的呼唤，危机令我们切身感受到人类生存的困境和背后的隐患，但同时也促使我们回望、复盘：究竟要构建怎样的世界我们才能更接近自然与人类平衡的逆熵状态，“设计”作为当代社会发展与经济建设的重要一环，决定着社会结构中人与人之间的关系如何定义与形成，设计的结果往往成为人类身体的延申，决定着“人”将以怎样的面貌存在，“设计”既是名词也是动词，它承载着人类富有生命力的创造行动形塑日常生活，勾勒着世界未来的图景</p>
-                <p>设计教育本身作为担负着更重的社会责任感的一种设计形式，引导并实践着如何将对世界的认知、人的需求、解决问题的策略与个体化的表达汇聚成一种多维度的力量从而塑造出创新与技术能力兼备的设计者。艾德艺术设计学院秉承这一理念，将设计行动贯穿整个教育过程，从学科体系既定的专业知识模块构架到课程之外的开放式活动，促使学生们展开纵向与横向的全面成长，为后续走向社会储备能量。</p>
-                <p>“艾德呈相”作为此次“design matters”呼唤的一个回应，一种镜像，将艾德艺术学院来自视觉传达设计、环境艺术设计、数字媒体设计三个专业方向的具有不同知识背景,但拥有共同美好愿景的学生通过多样化的作品表达呈现出向内的自我探索,编织出艾德年轻设计者的群像,并描绘出对外在世界的多重想象。</p>
-              </div>
-              <div class="main-content-right-en">
-                <p>“Design Matters!” We are all impacted by the pandemic, with catastrophe revealing the plight and the hidden danger of our existence, which has forced us to look thoughtfully at the balancing between us and nature. As a critical socioeconomic component of today’s world,“design”often defines the construction and structure of interpersonal relationships. With the outcome of the design becoming an extension of our body: effecting human creativity and proactivity, shapes norms today, and is sharping the vision tomorrow.</p>
-                <p>Emphasizing social responsibility, design education missions is to cultivate creative and skillful designers who can compose aquartet with cosmopolitanism, self-awareness, solution-seeking, and personal expression. Adhering to this philosophy, Eurasia Artand Design (EAAD) makes design a pivotal part throughout its education: from know-how in class to open events to practice,EAAD uses design education to boost the development of its students.</p>
-                <p>"EAaD Mirroring”is a response to the"Design Matters”call-out, it presents the work of EAaD students majoring in Visual Communication Design, Environmental Art Design, and Digital Media. Students'various background works in concert with their shared vision, and the unison showcases the inner perceptions of EAaD’s forward-looking young designers as well as their reveries gbout the today world.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="main-poster">
-          <a href="#" class="poster-item">
-            <img class="poster-img poster-img1" src="./library/images/list/1-dma.png" alt="" />
-            <img class="poster-img poster-img2" src="./library/images/list/1-dma-touch.png" alt="" />
-          </a>
-          <a href="#" class="poster-item">
-            <img class="poster-img poster-img1" src="./library/images/list/2-emd.png" alt="" />
-            <img class="poster-img poster-img2" src="./library/images/list/2-emd-touch.png" alt="" />
-          </a>
+        `);
+        const cadPoint = new vjmap.Point(587500025.09578,3103899983.60220);// cad图中的一个坐标点
+        const pt = map.toLngLat(cadPoint); // 转成要绘制的经纬度坐标
+        let marker = new vjmap.Marker();
+        marker.setLngLat(pt)
+            .setPopup(popup)
+            .addTo(map);
+        marker.togglePopup();;
 
-          <a href="#" class="poster-item">
-            <img class="poster-img poster-img1" src="./library/images/list/3-vcd.png" alt="" />
-            <img class="poster-img poster-img2" src="./library/images/list/3-vcd-touch.png" alt="" />
-          </a>
+    }
 
-          <div class="poster-item poster-item-last">
-            <img class="poster-last-height" src="./library/images/list/3-vcd.png" alt="" />
-            <a href="#" class="poster-item-top">
-              <img class="poster-img poster-img1" src="./library/images/list/4-hwy.png" alt="" />
-              <img class="poster-img poster-img2" src="./library/images/list/4-hwy-touch.png" alt="" />
-            </a>
-            <a href="#" class="poster-item-bottom">
-              <img class="poster-img poster-img1" src="./library/images/list/5-wrp.png" alt="" />
-              <img class="poster-img poster-img2" src="./library/images/list/5-wrp-touch.png" alt="" />
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="footer">
-        <div class="footer-wrap">
-          <div class="footer-box">
-            <div class="footer-left">
-              <img src="./library/images/icon/footer_logo.png" alt="" />
-            </div>
-            <div class="footer-interval"></div>
-            <div class="footer-center">
-              <img src="./library/images/EAaD_2wm.png" alt="" />
-            </div>
-            <div class="footer-interval"></div>
-            <div class="footer-right">
-              文德艺术设计学院 <br />
-              Add: 陕西省西安市雁塔区东仪路 邮编710065 <br />
-              T: +86-29-88297536 (教学支持与服务中心 学生事务专线) <br />
-              T: +86-29-88297826 (品牌中心) <br />
-              T: +86-29-88297708 (欧亚学院 招生办公室)
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="copyright">© 2020 EAaD school, Xi' an Eurasia University.All Rights Reserved</div>
-    </div>
+    async function addDrawControl(map) {
+        // 增加vjdraw环境
+        await vjmap.addScript([{
+            src: "https://vjmap.com/demo/js/plugins/vjdraw.min.js"
+        },{
+            src: "https://vjmap.com/demo/js/plugins/vjdraw.min.css"
+        }])
 
-    <script src="./library/js/index.js"></script>
-  </body>
+        const draw = new vjdraw.Draw({
+            modes: vjdraw.modes,
+            styles: vjdraw.SnapModeDrawStyles,
+            userProperties: true,
+            // Config snapping features
+            snap: true,
+            snapOptions: {
+                snapPx: 15, // defaults to 15
+                snapToMidPoints: true, // defaults to false
+                snapVertexPriorityDistance: 0.0025, // defaults to 1.25
+            },
+            guides: true
+        });
+        const drawBar = new vjdraw.DrawBar({
+            draw: draw
+        });
+        map.addControl(drawBar, 'top-right');
+
+        const mapBounds = map.getGeoBounds(0.4);
+        // 初始加入一个多边形
+        draw.set(vjmap.createPolygonGeoJson(map.toLngLat(mapBounds.randomPoints(3, 3))));
+        // 一进入就开启绘制多边形模型
+        draw.changeMode("draw_polygon");
+    }
+</script>
 </html>
