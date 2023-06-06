@@ -24,10 +24,24 @@
         .cursor {
             cursor: pointer;
         }
+        .btn {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            font-size: 12px;
+            color: #fff;
+            background: #409eff;
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 30px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <div id="map"></div>
+<div class="btn">登记隐患</div>
 </body>
 <script>
     document.addEventListener('UniAppJSBridgeReady', function() {
@@ -219,9 +233,9 @@
                 
                 let dom = ""
                 let anchor = "bottom"
-                let str = "登记了隐患"
+                let str = "已登记隐患"
                 if (item.type == 2) {
-                    str = "排查了隐患"
+                    str = "已排查隐患"
                 } else if (item.type == 3) {
                     str = "待排查隐患"
                     anchor = "right"
@@ -245,12 +259,21 @@
                         new vjmap.LngLat(item.pos[0], item.pos[1])
                     )
                 item.juli = juli
-                document.addEventListener('UniAppJSBridgeReady', function() {  
-                    uni.postMessage({  
-                        data: {  
-                            action: item
-                        }  
-                    });  
+                uni.postMessage({  
+                    data: {  
+                        action: item
+                    }  
+                });
+            })
+            $(".btn").click(() => {
+                const obj = {
+                    type: 4,
+                    pos: [110.8680839066069,35.548207938846645]
+                }
+                uni.postMessage({  
+                    data: {  
+                        action: item
+                    }  
                 });
             })
             
