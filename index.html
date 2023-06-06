@@ -1,148 +1,306 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ch">
 <head>
     <meta charset="UTF-8">
     <title>vjmap demo</title>
+    <meta content="width=device-width,initial-scale=1.0,maxinmum-scale=1.0,user-scalable=0" name="viewport">
     <link rel="stylesheet" type="text/css" href="https://vjmap.com/demo/js/vjmap/vjmap.min.css">
     <script type="text/javascript" src="https://vjmap.com/demo/js/vjmap/vjmap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.min.js"></script>
+    <script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js"></script>
+    <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
     <style>
-        .vjmapgis-popup-content {
-            padding: 0px;
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+        .cursor {
+            cursor: pointer;
         }
     </style>
 </head>
-<body style=" margin: 0;overflow: hidden;background-color:white;font-size: 16px">
-<div id="map" style="left:0;right:0;top:0;bottom:0;position: absolute;z-index: 0;"></div>
+<body>
+<div id="map"></div>
 </body>
 <script>
-    (async () => {
-        document.body.style.background = "#022B4F"; // 背景色改为深色
-        const env = {
-            serviceUrl: "https://vjmap.com/server/api/v1",
-            accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwiVXNlcm5hbWUiOiJyb290MSIsIk5pY2tOYW1lIjoicm9vdDEiLCJBdXRob3JpdHlJZCI6InJvb3QiLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjoxOTQyMzA1MjQxLCJpc3MiOiJ2am1hcCIsIm5iZiI6MTYyNjk0NDI0MX0.29OAA4Cnjtw780VxIxWqduLtszp1EtpSNHAmWjiL_OM",
-            exampleMapId: "sys_zp"
-        };
-        try {
-            // --拉伸多边形--
-            // 地图服务对象
+    document.addEventListener('UniAppJSBridgeReady', function() {
+
+        uni.webView.getEnv(function(res) {
+            console.log('当前环境：' + JSON.stringify(res));
+        });
+    // uni.webView.navigateTo(...)
+        
+        (async () => {
+            const env = {
+                serviceUrl: "https://vjmap.com/server/api/v1",
+                accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MiwiVXNlcm5hbWUiOiJhZG1pbjEiLCJOaWNrTmFtZSI6ImFkbWluMSIsIkF1dGhvcml0eUlkIjoiYWRtaW4iLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjo0ODEzMjY3NjM3LCJpc3MiOiJ2am1hcCIsIm5iZiI6MTY1OTY2NjYzN30.cDXCH2ElTzU2sQU36SNHWoTYTAc4wEkVIXmBAIzWh6M",
+                exampleMapId: "cd209a1f2356"
+            };
+            // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
             let svc = new vjmap.Service(env.serviceUrl, env.accessToken)
-            // 打开地图
+            svc.addAccessKey("akf65237a99b5e56c2")
+            // 根据地图范围建立经纬度投影坐标系
+            let prj = new vjmap.LnglatProjection();
+            // 地图对象
+            let map = new vjmap.Map({
+                container: 'map', // DIV容器ID
+                style: {
+                    version: svc.styleVersion(),
+                    glyphs: svc.glyphsUrl(),
+                    sources: {
+                        gaode: {
+                            type: 'raster',
+                            tiles: ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"],
+                        }
+                    },
+                    layers: [{
+                        id: 'gaode',
+                        type: 'raster',
+                        source: 'gaode',
+                    }]
+                },
+                center: [0, 0],
+                zoom: 18,
+                pitch: 0,
+                pitchWithRotate: false, // 倾斜
+                dragRotate: false, // 拖动旋转
+                touchZoomRotate: false, // 捏合旋转和缩放
+                renderWorldCopies: false // 不显示多屏地图
+            });
+            // 关联服务对象和投影对象
+            map.attach(svc, prj);
+            await map.onLoad();
+            // 先打开cad图
+            let mapId = "cd209a1f2356";
             let res = await svc.openMap({
-                mapid: env.exampleMapId, // 地图ID
+                mapid: mapId, // 地图ID
                 mapopenway: vjmap.MapOpenWay.GeomRender, // 以几何数据渲染方式打开
-                style: vjmap.openMapDarkStyle() // div为深色背景颜色时，这里也传深色背景样式
+                style: vjmap.openMapLightStyle() // div为深色背景颜色时，这里也传深色背景样式
             })
             if (res.error) {
                 // 如果打开出错
                 message.error(res.error)
-                return;
             }
-            // 获取地图范围
-            let mapExtent = vjmap.GeoBounds.fromString(res.bounds);
-            // 根据地图范围建立几何投影坐标系
-            let prj = new vjmap.GeoProjection(mapExtent);
+            let layer = res.layer;//图层样式名
 
-            // 地图对象
-            let map = new vjmap.Map({
-                container: 'map', // DIV容器ID
-                style: svc.vectorStyle(), // 样式，这里是栅格样式
-                center: prj.toLngLat(mapExtent.center()), // 设置地图中心点
-                zoom: 1, // 设置地图缩放级别,
-                pitch: 0, // 倾斜角度
-                renderWorldCopies: false // 不显示多屏地图
+            let cadEpsg = "EPSG:4546";// cad图的espg代号
+            // 增加cad的wms图层
+            let wmsUrl = svc.wmsTileUrl({
+                mapid: mapId, // 地图id
+                layers: layer, // 图层名称
+                srs: "EPSG:3857",
+                crs: cadEpsg,
+                
+                webMapType: "GCJ02" // 底图是高德地图，所以要选GCJ02,如果是天地图，可以不用填此项
+            })
+            map.addSource('wms-test-source', {
+                'type': 'raster',
+                'tiles': [
+                    wmsUrl
+                ],
+                'tileSize': 256
             });
+            map.addLayer({
+                    'id': 'wms-test-layer',
+                    'type': 'raster',
+                    'source': 'wms-test-source',
+                    'paint': { "raster-opacity": 1 }
+                }
+            );
+            const scaleControl = new vjmap.ScaleControl();
+            map.addControl(scaleControl, "bottom-left");
 
-            // 关联服务对象和投影对象
-            map.attach(svc, prj);
-            // 根据地图本身范围缩放地图至全图显示
-            //map.fitMapBounds();
-            await map.onLoad(); // 等待地图加载完成
-            let mapBounds = map.getGeoBounds(0.3);
-        const routePath = [];
-        // 随机加几个地图范围内的点
-        routePath.push(mapBounds.min);
-        routePath.push(mapBounds.center());
-        routePath.push(vjmap.geoPoint([mapBounds.max.x, mapBounds.min.y]));
-        routePath.push(mapBounds.max);
-        routePath.push(vjmap.geoPoint([mapBounds.min.x, mapBounds.max.y]));
-        routePath.push(mapBounds.min);
-        // 路径线
-        let routeLine = new vjmap.PolylineArrow({
-          path: map.toLngLat(routePath),
-          lineWidth: 10,
-          showDir: true,
-          lineColor: '#009EFF'
-        });
-        routeLine.addTo(map);
-            addMousePositionControl(map); // 鼠标位置控件
+            // 下面的参数内容请去 https://epsg.io/ 上面查询
+            // proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs +type=crs");
+            // proj4.defs("EPSG:4546", "+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs +type=crs");
 
-            addMarker(map); // 增加一个marker
+            // // cad图坐标转web wgs84坐标，再转火星坐标（高德)
+            // const cadToWebCoordinate = point => {
+            //     let co = proj4(cadEpsg, "EPSG:4326", vjmap.geoPoint(point).toArray());
+            //     // 把wgs84转成高德坐标坐标
+            //     return vjmap.transform.convert(co, vjmap.transform.CRSTypes.WGS84, vjmap.transform.CRSTypes.GCJ02);
+            // }
+            // // 火星坐标（高德)转web wgs84坐标转cad图坐标
+            // const webTocadCoordinate = point => {
+            //     let co = vjmap.transform.convert(point, vjmap.transform.CRSTypes.GCJ02, vjmap.transform.CRSTypes.WGS84)
+            //     return proj4("EPSG:4326", cadEpsg, co);
+            // }
+            // // 根据cad图的中心点，计算wgs84的中心点坐标
+            // let mapBounds = vjmap.GeoBounds.fromString(res.bounds);
+            // let cadCenter = mapBounds.center();
+            // let webCenter = cadToWebCoordinate(cadCenter);
+            var peopleMarker = new vjmap.Marker({
+                "zIndex": 2
+            })
+            peopleMarker.setLngLat([110.86825959129743,35.548700049751275]).addTo(map)
+            map.setCenter([110.86825959129743,35.548700049751275])
+            map.on("click", (event) => {
+                let point = map.fromLngLat(event.lngLat);
+                console.log(`[${point.x},${point.y}]`)
+            })
+            // 路径线
+            var routePath = [
+                [110.86895575041365,35.54880082419707],
+                [110.86969275753387,35.54858789964804],
+                [110.86947043953558,35.548405076601355],
+                [110.86886039774527,35.54856330222047],
+                [110.86828961328712,35.548492195980174],
+                [110.86825959129743,35.548700049751275]
+            ]
+            var routeLine = new vjmap.PolylineArrow({
+                path: map.toLngLat(routePath),
+                lineWidth: 10,
+                showDir: true,
+                lineColor: '#009EFF'
+            })
+            routeLine.addTo(map);
+            
+            // 添加信息窗
+            const popupList = [
+                {
+                    type: 1,
+                    id: 1,
+                    pos: [110.86939688130872,35.54867201186224]
+                },
+                {
+                    type: 2,
+                    id: 1,
+                    pos: [110.86969368474274,35.54858283586117]
+                },
+                {
+                    type: 2,
+                    id: 1,
+                    pos: [110.86937356272364,35.54842796391607]
+                },
+                {
+                    type: 1,
+                    id: 1,
+                    pos: [110.86886118906398,35.54855818071097]
+                },
+                {
+                    type: 2,
+                    id: 1,
+                    pos: [110.86844907087044,35.548506677274645]
+                },
+                {
+                    type: 3,
+                    id: 1,
+                    pos: [110.86825959129743,35.548700049751275]
+                },
+                {
+                    type: 3,
+                    id: 1,
+                    pos: [110.86802489800829,35.54865531252075]
+                },
+                {
+                    type: 3,
+                    id: 1,
+                    pos: [110.86805172009929,35.54845017563362]
+                },
+                {
+                    type: 3,
+                    id: 1,
+                    pos: [110.8680839066069,35.548207938846645]
+                }
+            ]
+            const pupObjList = []
+            popupList.map((item, i) => {
+                const pos = {
+                lng: item.pos[0],
+                lat: item.pos[1]
+                }
+                
+                let dom = ""
+                let anchor = "bottom"
+                let str = "登记了隐患"
+                if (item.type == 2) {
+                    str = "排查了隐患"
+                } else if (item.type == 3) {
+                    str = "待排查隐患"
+                    anchor = "right"
+                }
+                dom = `<div class="cursor popup" data-index=${i}>${str}</div>`
+                const popup = new vjmap.Popup({ 
+                    closeOnClick: false, 
+                    closeButton: false, 
+                    anchor: anchor
+                });
+                popup.setHTML(dom)
+                .setLngLat(pos)
+                .addTo(map);
+                pupObjList.push(popup)
+            })
+            $(".popup").click((e) => {
+                const index = $(e.target).attr("data-index")
+                const item = popupList[index]
+                console.log(item)
+                const juli = new vjmap.LngLat(110.86825959129743,35.548700049751275).distanceTo(
+                        new vjmap.LngLat(item.pos[0], item.pos[1])
+                    )
+                item.juli = juli
+                document.addEventListener('UniAppJSBridgeReady', function() {  
+                    uni.postMessage({  
+                        data: {  
+                            action: item
+                        }  
+                    });  
+                });
+            })
+            
+            // setTimeout(() => {
+            //    // 为路线添加新的线段
+            //     routePath.push([110.86801312756819,35.548665879313035])
+            //     routeLine.setPath(map.toLngLat(routePath))
+            //     console.log(111)
+            // }, 1000)
+            // 实时动画轨迹线
+            // let realRoute = new vjmap.PolylineArrow({
+            //   path: map.toLngLat(routePath),
+            //   lineWidth: 10,
+            //   showDir: true,
+            //   showBorder: true,
+            //   borderColor: "#f00",
+            //   lineColor: '#FF9900'
+            // });
+            // realRoute.addTo(map);
+            // // 线动画
+            // const anim = realRoute.animate(100, 10, true, status => console.log(status), (status, context) => {
+            //   // 动画每帧回调，在这里可以实时改变车的位置
+            //   // 获取角度
+            //   const angle = vjmap.geoPoint(context.endPnt).angleTo(vjmap.geoPoint(context.startPnt));
+            //   // 生成新的数据
+            //   const carGeoJson = vjmap.createPointGeoJson({
+            //     point: context.endPnt,
+            //     properties: { bearing: vjmap.radToDeg(-angle)}
+            //   });
+            //   const last = routePath[routePath.length - 1]
+            //   // 判断点是否相等 
+            //   console.log(vjmap.geoPoint(last).equals(vjmap.geoPoint(context.endPnt)))
+            //   if (vjmap.geoPoint(last).equals(vjmap.geoPoint(context.endPnt))) {
+            //     anim.stop()
+            //   }
+            //   // 更新车的数据
+            //   peopleMarker.setLngLat(context.endPnt); // 更新位置
+            //   map.setCenter(context.endPnt)
+            // })
 
-            addDrawControl(map); // 增加绘图控件
-			window.map = map;
-        }
-        catch (e) {
-            console.error(e);
-        }
-    })();
+            
+        })();
+    });
+    
+    
+    
+    
 
-    function addMousePositionControl(map) {
-        let mousePositionControl = new vjmap.MousePositionControl({
-            showLatLng: true
-        });
-        map.addControl(mousePositionControl, "bottom-left");
-    }
+   
 
-    function addMarker(map) {
-
-        // create the popup
-        let popup = new vjmap.Popup({ closeOnClick: false, offset: 5 })
-            .setHTML(`
-            <video width="100%" height="100%"  controls="controls" autoplay="autoplay" muted loop>
-              <source src="https://vjmap.com/demo/static/assets/video/butterfly.mp4" type="video/mp4" />
-            </video>
-        `);
-        const cadPoint = new vjmap.Point(587500025.09578,3103899983.60220);// cad图中的一个坐标点
-        const pt = map.toLngLat(cadPoint); // 转成要绘制的经纬度坐标
-        let marker = new vjmap.Marker();
-        marker.setLngLat(pt)
-            .setPopup(popup)
-            .addTo(map);
-        marker.togglePopup();;
-
-    }
-
-    async function addDrawControl(map) {
-        // 增加vjdraw环境
-        await vjmap.addScript([{
-            src: "https://vjmap.com/demo/js/plugins/vjdraw.min.js"
-        },{
-            src: "https://vjmap.com/demo/js/plugins/vjdraw.min.css"
-        }])
-
-        const draw = new vjdraw.Draw({
-            modes: vjdraw.modes,
-            styles: vjdraw.SnapModeDrawStyles,
-            userProperties: true,
-            // Config snapping features
-            snap: true,
-            snapOptions: {
-                snapPx: 15, // defaults to 15
-                snapToMidPoints: true, // defaults to false
-                snapVertexPriorityDistance: 0.0025, // defaults to 1.25
-            },
-            guides: true
-        });
-        const drawBar = new vjdraw.DrawBar({
-            draw: draw
-        });
-        map.addControl(drawBar, 'top-right');
-
-        const mapBounds = map.getGeoBounds(0.4);
-        // 初始加入一个多边形
-        draw.set(vjmap.createPolygonGeoJson(map.toLngLat(mapBounds.randomPoints(3, 3))));
-        // 一进入就开启绘制多边形模型
-        draw.changeMode("draw_polygon");
-    }
+    
 </script>
 </html>
