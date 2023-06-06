@@ -256,14 +256,14 @@
             $(".popup").click((e) => {
                 const index = $(e.target).attr("data-index")
                 const item = popupList[index]
-                console.log(111)
+                console.log(item)
                 const juli = new vjmap.LngLat(110.86825959129743,35.548700049751275).distanceTo(
                         new vjmap.LngLat(item.pos[0], item.pos[1])
                     )
                 item.juli = juli
                 uni.postMessage({  
                     data: {  
-                        action: "!23"
+                        action: item
                     }  
                 });
             })
@@ -276,7 +276,7 @@
                 console.log(obj)
                 uni.postMessage({  
                     data: {  
-                        action: "111"
+                        action: obj
                     }  
                 });
             })
