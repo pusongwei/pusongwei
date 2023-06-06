@@ -7,7 +7,8 @@
     <link rel="stylesheet" type="text/css" href="https://vjmap.com/demo/js/vjmap/vjmap.min.css">
     <script type="text/javascript" src="https://vjmap.com/demo/js/vjmap/vjmap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.min.js"></script>
-    <script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
+    <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
     <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
     <style>
         * {
@@ -255,7 +256,7 @@
             $(".popup").click((e) => {
                 const index = $(e.target).attr("data-index")
                 const item = popupList[index]
-                console.log(item)
+                console.log(111)
                 const juli = new vjmap.LngLat(110.86825959129743,35.548700049751275).distanceTo(
                         new vjmap.LngLat(item.pos[0], item.pos[1])
                     )
