@@ -1,132 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ch">
 <head>
     <meta charset="UTF-8">
     <title>vjmap demo</title>
     <link rel="stylesheet" type="text/css" href="https://vjmap.com/demo/js/vjmap/vjmap.min.css">
     <script type="text/javascript" src="https://vjmap.com/demo/js/vjmap/vjmap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.min.js"></script>
     <style>
-        .vjmapgis-popup-content {
-            padding: 0px;
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
         }
     </style>
 </head>
-<body style=" margin: 0;overflow: hidden;background-color:white;font-size: 16px">
-<div id="map" style="left:0;right:0;top:0;bottom:0;position: absolute;z-index: 0;"></div>
+<body>
+<div id="map"></div>
 </body>
 <script>
+    
     (async () => {
-        document.body.style.background = "#022B4F"; // 背景色改为深色
         const env = {
             serviceUrl: "https://vjmap.com/server/api/v1",
-            accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwiVXNlcm5hbWUiOiJyb290MSIsIk5pY2tOYW1lIjoicm9vdDEiLCJBdXRob3JpdHlJZCI6InJvb3QiLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjoxOTQyMzA1MjQxLCJpc3MiOiJ2am1hcCIsIm5iZiI6MTYyNjk0NDI0MX0.29OAA4Cnjtw780VxIxWqduLtszp1EtpSNHAmWjiL_OM",
-            exampleMapId: "sys_zp"
+            accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MiwiVXNlcm5hbWUiOiJhZG1pbjEiLCJOaWNrTmFtZSI6ImFkbWluMSIsIkF1dGhvcml0eUlkIjoiYWRtaW4iLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjo0ODEzMjY3NjM3LCJpc3MiOiJ2am1hcCIsIm5iZiI6MTY1OTY2NjYzN30.cDXCH2ElTzU2sQU36SNHWoTYTAc4wEkVIXmBAIzWh6M",
+            exampleMapId: "cd209a1f2356"
         };
-        try {
-            // --拉伸多边形--
-            // 地图服务对象
-            let svc = new vjmap.Service(env.serviceUrl, env.accessToken)
-            // 打开地图
-            let res = await svc.openMap({
-                mapid: env.exampleMapId, // 地图ID
-                mapopenway: vjmap.MapOpenWay.GeomRender, // 以几何数据渲染方式打开
-                style: vjmap.openMapDarkStyle() // div为深色背景颜色时，这里也传深色背景样式
-            })
-            if (res.error) {
-                // 如果打开出错
-                message.error(res.error)
-                return;
+        // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
+        let svc = new vjmap.Service(env.serviceUrl, env.accessToken)
+        svc.addAccessKey("akf65237a99b5e56c2")
+        // 根据地图范围建立经纬度投影坐标系
+        let prj = new vjmap.LnglatProjection();
+        // 地图对象
+        let map = new vjmap.Map({
+            container: 'map', // DIV容器ID
+            style: {
+                version: svc.styleVersion(),
+                glyphs: svc.glyphsUrl(),
+                sources: {
+                    gaode: {
+                        type: 'raster',
+                        tiles: ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"],
+                    }
+                },
+                layers: [{
+                    id: 'gaode',
+                    type: 'raster',
+                    source: 'gaode',
+                }]
+            },
+            center: [0, 0],
+            zoom: 18,
+            pitch: 0,
+            renderWorldCopies: false // 不显示多屏地图
+        });
+        // 关联服务对象和投影对象
+        map.attach(svc, prj);
+        await map.onLoad();
+        // 先打开cad图
+        let mapId = "cd209a1f2356";
+        let res = await svc.openMap({
+            mapid: mapId, // 地图ID
+            mapopenway: vjmap.MapOpenWay.GeomRender, // 以几何数据渲染方式打开
+            style: vjmap.openMapLightStyle() // div为深色背景颜色时，这里也传深色背景样式
+        })
+        if (res.error) {
+            // 如果打开出错
+            message.error(res.error)
+        }
+        let layer = res.layer;//图层样式名
+
+        let cadEpsg = "EPSG:4546";// cad图的espg代号
+        // 增加cad的wms图层
+        let wmsUrl = svc.wmsTileUrl({
+            mapid: mapId, // 地图id
+            layers: layer, // 图层名称
+            srs: "EPSG:3857",
+            crs: cadEpsg,
+            webMapType: "GCJ02" // 底图是高德地图，所以要选GCJ02,如果是天地图，可以不用填此项
+        })
+        map.addSource('wms-test-source', {
+            'type': 'raster',
+            'tiles': [
+                wmsUrl
+            ],
+            'tileSize': 256
+        });
+        map.addLayer({
+                'id': 'wms-test-layer',
+                'type': 'raster',
+                'source': 'wms-test-source',
+                'paint': { "raster-opacity": 1 }
             }
-            // 获取地图范围
-            let mapExtent = vjmap.GeoBounds.fromString(res.bounds);
-            // 根据地图范围建立几何投影坐标系
-            let prj = new vjmap.GeoProjection(mapExtent);
+        );
+       
 
-            // 地图对象
-            let map = new vjmap.Map({
-                container: 'map', // DIV容器ID
-                style: svc.vectorStyle(), // 样式，这里是栅格样式
-                center: prj.toLngLat(mapExtent.center()), // 设置地图中心点
-                zoom: 1, // 设置地图缩放级别,
-                pitch: 0, // 倾斜角度
-                renderWorldCopies: false // 不显示多屏地图
-            });
+        // 下面的参数内容请去 https://epsg.io/ 上面查询
+        // proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs +type=crs");
+        // proj4.defs("EPSG:4546", "+proj=tmerc +lat_0=0 +lon_0=105 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs +type=crs");
 
-            // 关联服务对象和投影对象
-            map.attach(svc, prj);
-            // 根据地图本身范围缩放地图至全图显示
-            //map.fitMapBounds();
-            await map.onLoad(); // 等待地图加载完成
+        // // cad图坐标转web wgs84坐标，再转火星坐标（高德)
+        // const cadToWebCoordinate = point => {
+        //     let co = proj4(cadEpsg, "EPSG:4326", vjmap.geoPoint(point).toArray());
+        //     // 把wgs84转成高德坐标坐标
+        //     return vjmap.transform.convert(co, vjmap.transform.CRSTypes.WGS84, vjmap.transform.CRSTypes.GCJ02);
+        // }
+        // // 火星坐标（高德)转web wgs84坐标转cad图坐标
+        // const webTocadCoordinate = point => {
+        //     let co = vjmap.transform.convert(point, vjmap.transform.CRSTypes.GCJ02, vjmap.transform.CRSTypes.WGS84)
+        //     return proj4("EPSG:4326", cadEpsg, co);
+        // }
+        // // 根据cad图的中心点，计算wgs84的中心点坐标
+        // let mapBounds = vjmap.GeoBounds.fromString(res.bounds);
+        // let cadCenter = mapBounds.center();
+        // let webCenter = cadToWebCoordinate(cadCenter);
+        var peopleMarker = new vjmap.Marker().setLngLat([110.87311,35.574397]).addTo(map)
+        map.setCenter([110.87311,35.574397])
 
-            addMousePositionControl(map); // 鼠标位置控件
-
-            addMarker(map); // 增加一个marker
-
-            addDrawControl(map); // 增加绘图控件
-			window.map = map;
-        }
-        catch (e) {
-            console.error(e);
-        }
     })();
 
-    function addMousePositionControl(map) {
-        let mousePositionControl = new vjmap.MousePositionControl({
-            showLatLng: true
-        });
-        map.addControl(mousePositionControl, "bottom-left");
-    }
+    
 
-    function addMarker(map) {
+   
 
-        // create the popup
-        let popup = new vjmap.Popup({ closeOnClick: false, offset: 5 })
-            .setHTML(`
-            <video width="100%" height="100%"  controls="controls" autoplay="autoplay" muted loop>
-              <source src="https://vjmap.com/demo/static/assets/video/butterfly.mp4" type="video/mp4" />
-            </video>
-        `);
-        const cadPoint = new vjmap.Point(587500025.09578,3103899983.60220);// cad图中的一个坐标点
-        const pt = map.toLngLat(cadPoint); // 转成要绘制的经纬度坐标
-        let marker = new vjmap.Marker();
-        marker.setLngLat(pt)
-            .setPopup(popup)
-            .addTo(map);
-        marker.togglePopup();;
-
-    }
-
-    async function addDrawControl(map) {
-        // 增加vjdraw环境
-        await vjmap.addScript([{
-            src: "https://vjmap.com/demo/js/plugins/vjdraw.min.js"
-        },{
-            src: "https://vjmap.com/demo/js/plugins/vjdraw.min.css"
-        }])
-
-        const draw = new vjdraw.Draw({
-            modes: vjdraw.modes,
-            styles: vjdraw.SnapModeDrawStyles,
-            userProperties: true,
-            // Config snapping features
-            snap: true,
-            snapOptions: {
-                snapPx: 15, // defaults to 15
-                snapToMidPoints: true, // defaults to false
-                snapVertexPriorityDistance: 0.0025, // defaults to 1.25
-            },
-            guides: true
-        });
-        const drawBar = new vjdraw.DrawBar({
-            draw: draw
-        });
-        map.addControl(drawBar, 'top-right');
-
-        const mapBounds = map.getGeoBounds(0.4);
-        // 初始加入一个多边形
-        draw.set(vjmap.createPolygonGeoJson(map.toLngLat(mapBounds.randomPoints(3, 3))));
-        // 一进入就开启绘制多边形模型
-        draw.changeMode("draw_polygon");
-    }
+    
 </script>
 </html>
