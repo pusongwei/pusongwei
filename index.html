@@ -251,6 +251,7 @@
                 .addTo(map);
                 pupObjList.push(popup)
             })
+            // 隐患位置弹框点击时计算当前位置和点击的隐患位置的距离 并通知app
             $(".popup").click((e) => {
                 const index = $(e.target).attr("data-index")
                 const item = popupList[index]
@@ -265,11 +266,13 @@
                     }  
                 });
             })
+            // 当前位置登记隐患
             $(".btn").click(() => {
                 const obj = {
                     type: 4,
                     pos: [110.8680839066069,35.548207938846645]
                 }
+                console.log(obj)
                 uni.postMessage({  
                     data: {  
                         action: obj
