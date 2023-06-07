@@ -7,8 +7,7 @@
     <link rel="stylesheet" type="text/css" href="https://vjmap.com/demo/js/vjmap/vjmap.min.css">
     <script type="text/javascript" src="https://vjmap.com/demo/js/vjmap/vjmap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
-    <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
+    
     <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
     <style>
         * {
@@ -50,6 +49,8 @@
 <div class="btn btn1">登记隐患</div>
 <div class="btn btn2">巡查记录</div>
 </body>
+<script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
+<script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script>
     document.addEventListener('UniAppJSBridgeReady', function() {
 
@@ -92,7 +93,7 @@
                 pitch: 0,
                 pitchWithRotate: false, // 倾斜
                 dragRotate: false, // 拖动旋转
-                touchZoomRotate: false, // 捏合旋转和缩放
+                touchZoomRotate: true, // 捏合旋转和缩放
                 renderWorldCopies: false // 不显示多屏地图
             });
             // 关联服务对象和投影对象
