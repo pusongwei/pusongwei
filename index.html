@@ -18,7 +18,7 @@
             position: absolute;
             left: 0;
             right: 0;
-            top: 20px;
+            top: 200px;
             bottom: 0;
         }
         .cursor {
@@ -61,8 +61,7 @@
             lat: item.pos.split(",")
             }
             let _marker = new vjmap.DiffusedApertureMarker({
-                lngLat: pos,
-                text: item.remark + i
+                lngLat: pos
             }, {
                 colors: ["red", "rgba(,0,0,0,0)"],
                 textColor: "#000"
