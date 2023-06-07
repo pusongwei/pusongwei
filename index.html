@@ -18,7 +18,7 @@
             position: absolute;
             left: 0;
             right: 0;
-            top: 300px;
+            top: 20px;
             bottom: 0;
         }
         .cursor {
@@ -53,24 +53,22 @@
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script>
     var map = ""
-    console.log(12121212)
-    window.setMarkerList = function (str) {
-        document.body.style.background = str;
-        console.log(22222222222222222)
-        // list.map((item, i) => {
-        //     const pos = {
-        //     lng: item.pos[0],
-        //     lat: item.pos[1]
-        //     }
-        //     let _marker = new vjmap.DiffusedApertureMarker({
-        //         lngLat: pos,
-        //         text: "文字" + i
-        //     }, {
-        //         colors: ["red", "rgba(,0,0,0,0)"],
-        //         textColor: "#000"
-        //     }).createMarker();
-        //     _marker.addTo(map)
-        // })
+    function setMarkerList (str) {
+        const list = JSON.parse(str)
+        list.map((item, i) => {
+            const pos = {
+            lng: item.pos[0],
+            lat: item.pos[1]
+            }
+            let _marker = new vjmap.DiffusedApertureMarker({
+                lngLat: pos,
+                text: "文字" + i
+            }, {
+                colors: ["red", "rgba(,0,0,0,0)"],
+                textColor: "#000"
+            }).createMarker();
+            _marker.addTo(map)
+        })
     } 
     document.addEventListener('UniAppJSBridgeReady', function() {
 
