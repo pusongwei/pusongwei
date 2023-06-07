@@ -18,7 +18,7 @@
             position: absolute;
             left: 0;
             right: 0;
-            top: 200px;
+            top: 20px;
             bottom: 0;
         }
         .cursor {
@@ -58,7 +58,7 @@
         list.map((item, i) => {
             const pos = {
             lng: item.pos.split(",")[0],
-            lat: item.pos.split(",")
+            lat: item.pos.split(",")[1]
             }
             let _marker = new vjmap.DiffusedApertureMarker({
                 lngLat: pos
