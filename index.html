@@ -57,17 +57,28 @@
         const list = JSON.parse(str)
         list.map((item, i) => {
             const pos = {
-            lng: item.pos[0],
-            lat: item.pos[1]
+            lng: item.pos.split(",")[0],
+            lat: item.pos.split(",")
             }
             let _marker = new vjmap.DiffusedApertureMarker({
                 lngLat: pos,
-                text: "文字" + i
+                text: item.remark + i
             }, {
                 colors: ["red", "rgba(,0,0,0,0)"],
                 textColor: "#000"
             }).createMarker();
             _marker.addTo(map)
+            _marker.on("click", (e) => {
+                console.log(i)
+                uni.postMessage({  
+                    data: {  
+                        action: {
+                            type: 4,
+                            data: item
+                        }
+                    }  
+                });
+            })
         })
     } 
     document.addEventListener('UniAppJSBridgeReady', function() {
@@ -209,70 +220,70 @@
             routeLine.addTo(map);
             
             // 添加信息窗
-            const popupList = [
-                {
-                    type: 1,
-                    id: 1,
-                    pos: [110.86939688130872,35.54867201186224]
-                },
-                {
-                    type: 2,
-                    id: 1,
-                    pos: [110.86969368474274,35.54858283586117]
-                },
-                {
-                    type: 2,
-                    id: 1,
-                    pos: [110.86937356272364,35.54842796391607]
-                },
-                {
-                    type: 1,
-                    id: 1,
-                    pos: [110.86886118906398,35.54855818071097]
-                },
-                {
-                    type: 2,
-                    id: 1,
-                    pos: [110.86844907087044,35.548506677274645]
-                },
-                {
-                    type: 3,
-                    id: 1,
-                    pos: [110.86825959129743,35.548700049751275]
-                },
-                {
-                    type: 3,
-                    id: 1,
-                    pos: [110.86802489800829,35.54865531252075]
-                },
-                {
-                    type: 3,
-                    id: 1,
-                    pos: [110.86805172009929,35.54845017563362]
-                },
-                {
-                    type: 3,
-                    id: 1,
-                    pos: [110.8680839066069,35.548207938846645]
-                }
-            ]
-            const pupObjList = []
+            // const popupList = [
+            //     {
+            //         type: 1,
+            //         id: 1,
+            //         pos: [110.86939688130872,35.54867201186224]
+            //     },
+            //     {
+            //         type: 2,
+            //         id: 1,
+            //         pos: [110.86969368474274,35.54858283586117]
+            //     },
+            //     {
+            //         type: 2,
+            //         id: 1,
+            //         pos: [110.86937356272364,35.54842796391607]
+            //     },
+            //     {
+            //         type: 1,
+            //         id: 1,
+            //         pos: [110.86886118906398,35.54855818071097]
+            //     },
+            //     {
+            //         type: 2,
+            //         id: 1,
+            //         pos: [110.86844907087044,35.548506677274645]
+            //     },
+            //     {
+            //         type: 3,
+            //         id: 1,
+            //         pos: [110.86825959129743,35.548700049751275]
+            //     },
+            //     {
+            //         type: 3,
+            //         id: 1,
+            //         pos: [110.86802489800829,35.54865531252075]
+            //     },
+            //     {
+            //         type: 3,
+            //         id: 1,
+            //         pos: [110.86805172009929,35.54845017563362]
+            //     },
+            //     {
+            //         type: 3,
+            //         id: 1,
+            //         pos: [110.8680839066069,35.548207938846645]
+            //     }
+            // ]
+            // const pupObjList = []
             // popupList.map((item, i) => {
             //     const pos = {
             //     lng: item.pos[0],
             //     lat: item.pos[1]
             //     }
             //     let _marker = new vjmap.DiffusedApertureMarker({
-            //         lngLat: pos,
-            //         text: "文字" + i
+            //         lngLat: pos
             //     }, {
             //         colors: ["red", "rgba(,0,0,0,0)"],
             //         textColor: "#000"
             //     }).createMarker();
             //     _marker.addTo(map)
+                
             // })
             
-            // 当前位置登记隐患
+            // 当前位置巡检登记
             $(".btn1").click(() => {
                 const obj = {
                     type: 4,
@@ -282,8 +293,7 @@
                 uni.postMessage({  
                     data: {  
                         action: {
-                            type: 1,
-                            data: obj
+                            type: 1
                         }
                     }  
                 });
