@@ -137,6 +137,13 @@
             );
             const scaleControl = new vjmap.ScaleControl();
             map.addControl(scaleControl, "bottom-left");
+            uni.postMessage({  
+                data: {  
+                    action: {
+                        type: 3
+                    }
+                }  
+            });
 
             // 下面的参数内容请去 https://epsg.io/ 上面查询
             // proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs +type=crs");
@@ -157,9 +164,7 @@
             // let mapBounds = vjmap.GeoBounds.fromString(res.bounds);
             // let cadCenter = mapBounds.center();
             // let webCenter = cadToWebCoordinate(cadCenter);
-            var peopleMarker = new vjmap.Marker({
-                "zIndex": 2
-            })
+            var peopleMarker = new vjmap.Marker()
             peopleMarker.setLngLat([110.86825959129743,35.548700049751275]).addTo(map)
             map.setCenter([110.86825959129743,35.548700049751275])
             map.on("click", (event) => {
@@ -232,47 +237,36 @@
                 }
             ]
             const pupObjList = []
-            popupList.map((item, i) => {
-                const pos = {
-                lng: item.pos[0],
-                lat: item.pos[1]
-                }
-                
-                let dom = ""
-                let anchor = "bottom"
-                let str = "已登记隐患"
-                if (item.type == 2) {
-                    str = "已排查隐患"
-                } else if (item.type == 3) {
-                    str = "待排查隐患"
-                    anchor = "right"
-                }
-                dom = `<div class="cursor popup" data-index=${i}>${str}</div>`
-                const popup = new vjmap.Popup({ 
-                    closeOnClick: false, 
-                    closeButton: false, 
-                    anchor: anchor
-                });
-                popup.setHTML(dom)
-                .setLngLat(pos)
-                .addTo(map);
-                pupObjList.push(popup)
-            })
-            // 隐患位置弹框点击时计算当前位置和点击的隐患位置的距离 并通知app
-            $(".popup").click((e) => {
-                const index = $(e.target).attr("data-index")
-                const item = popupList[index]
-                console.log(item)
-                const juli = new vjmap.LngLat(110.86825959129743,35.548700049751275).distanceTo(
-                        new vjmap.LngLat(item.pos[0], item.pos[1])
-                    )
-                item.juli = juli
-                uni.postMessage({  
-                    data: {  
-                        action: item
-                    }  
-                });
-            })
+            // popupList.map((item, i) => {
+            //     const pos = {
+            //     lng: item.pos[0],
+            //     lat: item.pos[1]
+            //     }
+            //     let _marker = new vjmap.DiffusedApertureMarker({
+            //         lngLat: pos,
+            //         text: "文字" + i
+            //     }, {
+            //         colors: ["red", "rgba(,0,0,0,0)"],
+            //         textColor: "#000"
+            //     }).createMarker();
+            //     _marker.addTo(map)
+            // })
+            function setMarkerList (list) {
+                list.map((item, i) => {
+                    const pos = {
+                    lng: item.pos[0],
+                    lat: item.pos[1]
+                    }
+                    let _marker = new vjmap.DiffusedApertureMarker({
+                        lngLat: pos,
+                        text: "文字" + i
+                    }, {
+                        colors: ["red", "rgba(,0,0,0,0)"],
+                        textColor: "#000"
+                    }).createMarker();
+                    _marker.addTo(map)
+                })
+            } 
             // 当前位置登记隐患
             $(".btn1").click(() => {
                 const obj = {
