@@ -52,13 +52,30 @@
 <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script>
+    var map = ""
+    function setMarkerList (list) {
+        list.map((item, i) => {
+            const pos = {
+            lng: item.pos[0],
+            lat: item.pos[1]
+            }
+            let _marker = new vjmap.DiffusedApertureMarker({
+                lngLat: pos,
+                text: "文字" + i
+            }, {
+                colors: ["red", "rgba(,0,0,0,0)"],
+                textColor: "#000"
+            }).createMarker();
+            _marker.addTo(map)
+        })
+    } 
     document.addEventListener('UniAppJSBridgeReady', function() {
 
         uni.webView.getEnv(function(res) {
             console.log('当前环境：' + JSON.stringify(res));
         });
     // uni.webView.navigateTo(...)
-        
+    
         (async () => {
             const env = {
                 serviceUrl: "https://vjmap.com/server/api/v1",
@@ -71,7 +88,7 @@
             // 根据地图范围建立经纬度投影坐标系
             let prj = new vjmap.LnglatProjection();
             // 地图对象
-            let map = new vjmap.Map({
+            map = new vjmap.Map({
                 container: 'map', // DIV容器ID
                 style: {
                     version: svc.styleVersion(),
@@ -252,22 +269,7 @@
             //     }).createMarker();
             //     _marker.addTo(map)
             // })
-            function setMarkerList (list) {
-                list.map((item, i) => {
-                    const pos = {
-                    lng: item.pos[0],
-                    lat: item.pos[1]
-                    }
-                    let _marker = new vjmap.DiffusedApertureMarker({
-                        lngLat: pos,
-                        text: "文字" + i
-                    }, {
-                        colors: ["red", "rgba(,0,0,0,0)"],
-                        textColor: "#000"
-                    }).createMarker();
-                    _marker.addTo(map)
-                })
-            } 
+            
             // 当前位置登记隐患
             $(".btn1").click(() => {
                 const obj = {
