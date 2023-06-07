@@ -27,7 +27,6 @@
         }
         .btn {
             position: fixed;
-            right: 10px;
             bottom: 10px;
             font-size: 12px;
             color: #fff;
@@ -38,11 +37,18 @@
             border-radius: 30px;
             text-align: center;
         }
+        .btn1 {
+            right: 10px;
+        }
+        .btn2 {
+            right: 120px;
+        }
     </style>
 </head>
 <body>
 <div id="map"></div>
-<div class="btn">登记隐患</div>
+<div class="btn btn1">登记隐患</div>
+<div class="btn btn2">巡查记录</div>
 </body>
 <script>
     document.addEventListener('UniAppJSBridgeReady', function() {
@@ -268,7 +274,7 @@
                 });
             })
             // 当前位置登记隐患
-            $(".btn").click(() => {
+            $(".btn1").click(() => {
                 const obj = {
                     type: 4,
                     pos: [110.8680839066069,35.548207938846645]
@@ -276,11 +282,24 @@
                 console.log(obj)
                 uni.postMessage({  
                     data: {  
-                        action: obj
+                        action: {
+                            type: 1,
+                            data: obj
+                        }
                     }  
                 });
             })
             
+            // 巡查记录
+            $(".btn1").click(() => {
+                uni.postMessage({  
+                    data: {  
+                        action: {
+                            type: 2
+                        }
+                    }  
+                });
+            })
             // setTimeout(() => {
             //    // 为路线添加新的线段
             //     routePath.push([110.86801312756819,35.548665879313035])
