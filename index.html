@@ -18,7 +18,7 @@
             position: absolute;
             left: 0;
             right: 0;
-            top: 20px;
+            top: 300px;
             bottom: 0;
         }
         .cursor {
@@ -54,23 +54,23 @@
 <script>
     var map = ""
     console.log(12121212)
-    window.setMarkerList = function (list) {
-        document.body.style.background ='red';
+    window.setMarkerList = function (str) {
+        document.body.style.background = str;
         console.log(22222222222222222)
-        list.map((item, i) => {
-            const pos = {
-            lng: item.pos[0],
-            lat: item.pos[1]
-            }
-            let _marker = new vjmap.DiffusedApertureMarker({
-                lngLat: pos,
-                text: "文字" + i
-            }, {
-                colors: ["red", "rgba(,0,0,0,0)"],
-                textColor: "#000"
-            }).createMarker();
-            _marker.addTo(map)
-        })
+        // list.map((item, i) => {
+        //     const pos = {
+        //     lng: item.pos[0],
+        //     lat: item.pos[1]
+        //     }
+        //     let _marker = new vjmap.DiffusedApertureMarker({
+        //         lngLat: pos,
+        //         text: "文字" + i
+        //     }, {
+        //         colors: ["red", "rgba(,0,0,0,0)"],
+        //         textColor: "#000"
+        //     }).createMarker();
+        //     _marker.addTo(map)
+        // })
     } 
     document.addEventListener('UniAppJSBridgeReady', function() {
 
