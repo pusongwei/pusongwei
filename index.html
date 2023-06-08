@@ -55,6 +55,9 @@
     var map = ""
     var center = [110.8680839066069,35.548207938846645]
     var routeLine = ""
+    var markers = []
+    var peopleMarker = ""
+    // 添加点标记
     function setMarkerList (str) {
         const list = JSON.parse(str)
         list.map((item, i) => {
@@ -69,6 +72,7 @@
                 textColor: "#000"
             }).createMarker();
             _marker.addTo(map)
+            markers.push(_marker)
             _marker.on("click", (e) => {
                 console.log(i)
                 uni.postMessage({  
@@ -81,11 +85,20 @@
                 });
             })
         })
-    } 
+    }
+    // 删除点标记
+    function removeMarker () {
+        markers.map((i,item) => {
+            item && item.remove()
+        })
+    }
+    // 设置地图中心
     function setCenter(str) {
         center = str.split(",")
+        peopleMarker.setLngLat(center)
         map.setCenter(center)
     }
+    // 设置路径线
     function setLine(str) {
         // 路径线
         var routePath = JSON.parse(str)
@@ -145,6 +158,7 @@
                 pitchWithRotate: false, // 倾斜
                 dragRotate: false, // 拖动旋转
                 touchZoomRotate: true, // 捏合旋转和缩放
+                doubleClickZoom: false, // 双击缩放
                 renderWorldCopies: false // 不显示多屏地图
             });
             // 关联服务对象和投影对象
@@ -216,7 +230,7 @@
             // let mapBounds = vjmap.GeoBounds.fromString(res.bounds);
             // let cadCenter = mapBounds.center();
             // let webCenter = cadToWebCoordinate(cadCenter);
-            var peopleMarker = new vjmap.Marker()
+            peopleMarker = new vjmap.Marker()
             peopleMarker.setLngLat([110.86825959129743,35.548700049751275]).addTo(map)
             
             map.on("click", (event) => {
