@@ -53,6 +53,8 @@
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script>
     var map = ""
+    var center = [110.8680839066069,35.548207938846645]
+    var routeLine = ""
     function setMarkerList (str) {
         const list = JSON.parse(str)
         list.map((item, i) => {
@@ -80,6 +82,27 @@
             })
         })
     } 
+    function setCenter(str) {
+        center = str.split(",")
+        map.setCenter(center)
+    }
+    function setLine(str) {
+        // 路径线
+        var routePath = JSON.parse(str)
+        if (!routeLine) {
+            routeLine = new vjmap.PolylineArrow({
+                path: map.toLngLat(routePath),
+                lineWidth: 10,
+                showDir: true,
+                lineColor: '#009EFF'
+            })
+            routeLine.addTo(map);
+        } else {
+            routeLine.setPath(map.toLngLat(routePath))
+        }
+    }
+
+
     document.addEventListener('UniAppJSBridgeReady', function() {
 
         uni.webView.getEnv(function(res) {
@@ -116,7 +139,7 @@
                         source: 'gaode',
                     }]
                 },
-                center: [0, 0],
+                center: center,
                 zoom: 18,
                 pitch: 0,
                 pitchWithRotate: false, // 倾斜
@@ -173,7 +196,6 @@
                     }
                 }  
             });
-            console.log(3333333333)
 
             // 下面的参数内容请去 https://epsg.io/ 上面查询
             // proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs +type=crs");
@@ -196,27 +218,12 @@
             // let webCenter = cadToWebCoordinate(cadCenter);
             var peopleMarker = new vjmap.Marker()
             peopleMarker.setLngLat([110.86825959129743,35.548700049751275]).addTo(map)
-            map.setCenter([110.86825959129743,35.548700049751275])
+            
             map.on("click", (event) => {
                 let point = map.fromLngLat(event.lngLat);
                 console.log(`[${point.x},${point.y}]`)
             })
-            // 路径线
-            var routePath = [
-                [110.86895575041365,35.54880082419707],
-                [110.86969275753387,35.54858789964804],
-                [110.86947043953558,35.548405076601355],
-                [110.86886039774527,35.54856330222047],
-                [110.86828961328712,35.548492195980174],
-                [110.86825959129743,35.548700049751275]
-            ]
-            var routeLine = new vjmap.PolylineArrow({
-                path: map.toLngLat(routePath),
-                lineWidth: 10,
-                showDir: true,
-                lineColor: '#009EFF'
-            })
-            routeLine.addTo(map);
+           
             
             // 添加信息窗
             // const popupList = [
@@ -284,15 +291,11 @@
             
             // 当前位置巡检登记
             $(".btn1").click(() => {
-                const obj = {
-                    type: 4,
-                    pos: [110.8680839066069,35.548207938846645]
-                }
-                console.log(obj)
                 uni.postMessage({  
                     data: {  
                         action: {
-                            type: 1
+                            type: 1,
+                            data: center
                         }
                     }  
                 });
