@@ -222,7 +222,14 @@
             map.on("click", (event) => {
                 let point = map.fromLngLat(event.lngLat);
                 console.log(`[${point.x},${point.y}]`)
-                mapResize()
+                uni.postMessage({  
+                data: {  
+                    action: {
+                        type: 3,
+                        data: [point.x, point.y]
+                    }
+                }  
+            });
             })
             
             
