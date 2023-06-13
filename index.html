@@ -135,10 +135,10 @@
     window.addEventListener("message", function (event) {
         var data = event.data;
         // 定义一个变量去接收,然后就可以获得vue传过来的数据
-        console.log("从vue中获得的数据", data.params);
-        if (data.params.type == 1) {
-            console.log("从vue", data.params);
-            trackPlayback(data.params.routePath, data.params.markers)
+        const params =  data.params
+        if (params["type"] == 1) {
+            console.log("从vue", params);
+            trackPlayback(params.params.routePath, params.params.markers)
         }
     }, '*')
     // 轨迹回放
