@@ -134,9 +134,9 @@
     // 接受VUE页面发来的信息
     window.addEventListener("message", function (event) {
         var data = event.data;
-        console.log("从vue中获得的数据", data);
         // 定义一个变量去接收,然后就可以获得vue传过来的数据
         if (data.type == 1) {
+            console.log("从vue中获得的数据", data);
             trackPlayback(data.params.routePath, data.params.markers)
         }
     }, '*')
