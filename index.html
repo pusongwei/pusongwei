@@ -113,6 +113,15 @@
         }, 1000)
     }
 
+    // 接受VUE页面发来的信息
+    window.addEventListener("message", function (event) {
+        var data = event.data;
+        console.log("从vue中获得的数据", data);
+        // 定义一个变量去接收,然后就可以获得vue传过来的数据
+        var test = data.params;
+    }, '*')
+
+
 
     document.addEventListener('UniAppJSBridgeReady', function() {
 
@@ -210,6 +219,7 @@
             // 导航条
             const navigationControl = new vjmap.NavigationControl();
             map.addControl(navigationControl, "top-right");
+            // H5页面加载完毕
             uni.postMessage({  
                 data: {  
                     action: {
@@ -217,6 +227,11 @@
                     }
                 }  
             });
+            // 向父vue页面发送信息
+            window.parent.postMessage({
+                params: "1",
+                cmd: "iframeOne" 
+            },'*');
 
             // 下面的参数内容请去 https://epsg.io/ 上面查询
             // proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs +type=crs");
