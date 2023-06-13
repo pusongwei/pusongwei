@@ -32,6 +32,15 @@
 <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script>
+    var mapId = "cd209a1f2356";
+    const env = {
+        serviceUrl: "https://vjmap.com/server/api/v1",
+        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MiwiVXNlcm5hbWUiOiJhZG1pbjEiLCJOaWNrTmFtZSI6ImFkbWluMSIsIkF1dGhvcml0eUlkIjoiYWRtaW4iLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjo0ODEzMjY3NjM3LCJpc3MiOiJ2am1hcCIsIm5iZiI6MTY1OTY2NjYzN30.cDXCH2ElTzU2sQU36SNHWoTYTAc4wEkVIXmBAIzWh6M",
+        exampleMapId: "cd209a1f2356"
+    };
+    // CAD图key
+    const accessKey = "akf65237a99b5e56c2"
+
     var map = ""
     var center = [110.8680839066069,35.548207938846645]
     var routeLine = ""
@@ -40,6 +49,8 @@
     var clickMarker = ""
     var canClickMarker = 1
     var setCen = true
+    var anim = null
+    var realRoute = null
     // 添加点标记
     function setMarkerList (str) {
         // str = `[{"id":67,"updateTime":"2023-06-08 17:56:33","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86939688130872,35.54867201186224","realName":"系统管理员"},{"id":68,"updateTime":"2023-06-08 17:56:40","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86969368474274,35.54858283586117","realName":"系统管理员"},{"id":69,"updateTime":"2023-06-08 17:56:50","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86937356272364,35.54842796391607","realName":"系统管理员"},{"id":70,"updateTime":"2023-06-08 17:56:58","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86886118906398,35.54855818071097","realName":"系统管理员"},{"id":71,"updateTime":"2023-06-08 17:57:06","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86844907087044,35.548506677274645","realName":"系统管理员"},{"id":72,"updateTime":"2023-06-08 17:57:14","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86825959129743,35.548700049751275","realName":"系统管理员"}]`
@@ -66,6 +77,12 @@
                         }
                     }  
                 });
+                window.parent.postMessage({
+                    params: {
+                        type: 2,
+                        data: item
+                    }
+                },'*');
             })
         })
     }
@@ -86,6 +103,7 @@
     // 设置路径线
     function setLine(str) {
         // 路径线
+        console.log(str)
         var routePath = JSON.parse(str)
         if (!routeLine) {
             routeLine = new vjmap.PolylineArrow({
@@ -118,9 +136,49 @@
         var data = event.data;
         console.log("从vue中获得的数据", data);
         // 定义一个变量去接收,然后就可以获得vue传过来的数据
-        var test = data.params;
+        if (data.type == 1) {
+            trackPlayback(data.params.routePath, data.params.markers)
+        }
     }, '*')
-
+    // 轨迹回放
+    function trackPlayback (routePath, markers) {
+        setLine(JSON.stringify(routePath))
+        removeMarker()
+        setMarkerList(markers)
+        if (anim) {
+            anim.stop()
+        }
+        // 实时动画轨迹线
+        realRoute = new vjmap.PolylineArrow({
+            path: map.toLngLat(routePath),
+            lineWidth: 10,
+            showDir: true,
+            showBorder: true,
+            borderColor: "#f00",
+            lineColor: '#FF9900'
+        });
+        realRoute.addTo(map);
+        // 线动画
+        anim = realRoute.animate(100, 10, true, status => console.log(status), (status, context) => {
+            // 动画每帧回调，在这里可以实时改变车的位置
+            // 获取角度
+            const angle = vjmap.geoPoint(context.endPnt).angleTo(vjmap.geoPoint(context.startPnt));
+            // 生成新的数据
+            const carGeoJson = vjmap.createPointGeoJson({
+                point: context.endPnt,
+                properties: { bearing: vjmap.radToDeg(-angle)}
+            });
+            const last = routePath[routePath.length - 1]
+            // 判断点是否相等 
+            if (vjmap.geoPoint(last).equals(vjmap.geoPoint(context.endPnt))) {
+                anim.stop()
+            }
+            // 更新车的数据
+            peopleMarker.setLngLat(context.endPnt); // 更新位置
+            map.setCenter(context.endPnt)
+        })
+    }
+    
 
 
     document.addEventListener('UniAppJSBridgeReady', function() {
@@ -131,15 +189,11 @@
     // uni.webView.navigateTo(...)
     
         (async () => {
-            let mapId = "cd209a1f2356";
-            const env = {
-                serviceUrl: "https://vjmap.com/server/api/v1",
-                accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MiwiVXNlcm5hbWUiOiJhZG1pbjEiLCJOaWNrTmFtZSI6ImFkbWluMSIsIkF1dGhvcml0eUlkIjoiYWRtaW4iLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjo0ODEzMjY3NjM3LCJpc3MiOiJ2am1hcCIsIm5iZiI6MTY1OTY2NjYzN30.cDXCH2ElTzU2sQU36SNHWoTYTAc4wEkVIXmBAIzWh6M",
-                exampleMapId: mapId
-            };
+            
+            
             // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
             let svc = new vjmap.Service(env.serviceUrl, env.accessToken)
-            svc.addAccessKey("akf65237a99b5e56c2")
+            svc.addAccessKey(accessKey)
             // 根据地图范围建立经纬度投影坐标系
             let prj = new vjmap.LnglatProjection();
             // 地图对象
@@ -229,8 +283,9 @@
             });
             // 向父vue页面发送信息
             window.parent.postMessage({
-                params: "1",
-                cmd: "iframeOne" 
+                params: {
+                    type: 1
+                }
             },'*');
 
             // 下面的参数内容请去 https://epsg.io/ 上面查询
@@ -258,74 +313,39 @@
             map.on("click", (event) => {
                 let point = map.fromLngLat(event.lngLat);
                 console.log(`[${point.x},${point.y}]`)
-                if (canClickMarker  == 1) {
-                    const pos = {
-                        lng: point.x,
-                        lat: point.y
-                    }
-                    if (clickMarker) {
-                        clickMarker.setLngLat(pos)
-                    } else {
-                        clickMarker = new vjmap.DiffusedApertureMarker({
-                            lngLat: pos
-                        }, {
-                            colors: ["#3FB1CE", "rgba(,0,0,0,0)"],
-                            textColor: "#000"
-                        }).createMarker();
-                        clickMarker.addTo(map)
-                    }
+                // if (canClickMarker  == 1) {
+                //     const pos = {
+                //         lng: point.x,
+                //         lat: point.y
+                //     }
+                //     if (clickMarker) {
+                //         clickMarker.setLngLat(pos)
+                //     } else {
+                //         clickMarker = new vjmap.DiffusedApertureMarker({
+                //             lngLat: pos
+                //         }, {
+                //             colors: ["#3FB1CE", "rgba(,0,0,0,0)"],
+                //             textColor: "#000"
+                //         }).createMarker();
+                //         clickMarker.addTo(map)
+                //     }
                     
-                    uni.postMessage({  
-                        data: {  
-                            action: {
-                                type: 3,
-                                data: [point.x, point.y]
-                            }
-                        }  
-                    });
-                }
+                //     uni.postMessage({  
+                //         data: {  
+                //             action: {
+                //                 type: 3,
+                //                 data: [point.x, point.y]
+                //             }
+                //         }  
+                //     });
+                // }
             })
             map.on("move", () => {
                 setCen = false
             })
             
             
-            // setTimeout(() => {
-            //    // 为路线添加新的线段
-            //     routePath.push([110.86801312756819,35.548665879313035])
-            //     routeLine.setPath(map.toLngLat(routePath))
-            //     console.log(111)
-            // }, 1000)
-            // 实时动画轨迹线
-            // let realRoute = new vjmap.PolylineArrow({
-            //   path: map.toLngLat(routePath),
-            //   lineWidth: 10,
-            //   showDir: true,
-            //   showBorder: true,
-            //   borderColor: "#f00",
-            //   lineColor: '#FF9900'
-            // });
-            // realRoute.addTo(map);
-            // // 线动画
-            // const anim = realRoute.animate(100, 10, true, status => console.log(status), (status, context) => {
-            //   // 动画每帧回调，在这里可以实时改变车的位置
-            //   // 获取角度
-            //   const angle = vjmap.geoPoint(context.endPnt).angleTo(vjmap.geoPoint(context.startPnt));
-            //   // 生成新的数据
-            //   const carGeoJson = vjmap.createPointGeoJson({
-            //     point: context.endPnt,
-            //     properties: { bearing: vjmap.radToDeg(-angle)}
-            //   });
-            //   const last = routePath[routePath.length - 1]
-            //   // 判断点是否相等 
-            //   console.log(vjmap.geoPoint(last).equals(vjmap.geoPoint(context.endPnt)))
-            //   if (vjmap.geoPoint(last).equals(vjmap.geoPoint(context.endPnt))) {
-            //     anim.stop()
-            //   }
-            //   // 更新车的数据
-            //   peopleMarker.setLngLat(context.endPnt); // 更新位置
-            //   map.setCenter(context.endPnt)
-            // })
+            
 
             
         })();
