@@ -2,7 +2,7 @@
 <html lang="ch">
 <head>
     <meta charset="UTF-8">
-    <title>vjmap demo</title>
+    <title>map</title>
     <meta content="width=device-width,initial-scale=1.0,maxinmum-scale=1.0,user-scalable=0" name="viewport">
     <link rel="stylesheet" type="text/css" href="https://vjmap.com/demo/js/vjmap/vjmap.min.css">
     <script type="text/javascript" src="https://vjmap.com/demo/js/vjmap/vjmap.min.js"></script>
@@ -33,7 +33,7 @@
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script>
     var map = ""
-    var center = [110.8680839066069,35.548207938846645]
+    var center = []
     var routeLine = ""
     var markers = []
     var peopleMarker = ""
@@ -115,10 +115,11 @@
     // uni.webView.navigateTo(...)
     
         (async () => {
+            let mapId = "cd209a1f2356";
             const env = {
                 serviceUrl: "https://vjmap.com/server/api/v1",
                 accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MiwiVXNlcm5hbWUiOiJhZG1pbjEiLCJOaWNrTmFtZSI6ImFkbWluMSIsIkF1dGhvcml0eUlkIjoiYWRtaW4iLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjo0ODEzMjY3NjM3LCJpc3MiOiJ2am1hcCIsIm5iZiI6MTY1OTY2NjYzN30.cDXCH2ElTzU2sQU36SNHWoTYTAc4wEkVIXmBAIzWh6M",
-                exampleMapId: "cd209a1f2356"
+                exampleMapId: mapId
             };
             // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
             let svc = new vjmap.Service(env.serviceUrl, env.accessToken)
@@ -134,7 +135,11 @@
                     sources: {
                         gaode: {
                             type: 'raster',
-                            tiles: ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"],
+                            tiles: [
+                                "https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
+                                // 影像地图
+                                // "https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"
+                            ],
                         }
                     },
                     layers: [{
@@ -156,7 +161,7 @@
             map.attach(svc, prj);
             await map.onLoad();
             // 先打开cad图
-            let mapId = "cd209a1f2356";
+            
             let res = await svc.openMap({
                 mapid: mapId, // 地图ID
                 mapopenway: vjmap.MapOpenWay.GeomRender, // 以几何数据渲染方式打开
@@ -167,7 +172,7 @@
                 message.error(res.error)
             }
             let layer = res.layer;//图层样式名
-
+            
             let cadEpsg = "EPSG:4546";// cad图的espg代号
             // 增加cad的wms图层
             let wmsUrl = svc.wmsTileUrl({
@@ -192,8 +197,12 @@
                     'paint': { "raster-opacity": 1 }
                 }
             );
+            // 比例尺
             const scaleControl = new vjmap.ScaleControl();
             map.addControl(scaleControl, "bottom-left");
+            // 导航条
+            const navigationControl = new vjmap.NavigationControl();
+            map.addControl(navigationControl, "top-right");
             uni.postMessage({  
                 data: {  
                     action: {
