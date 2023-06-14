@@ -157,6 +157,9 @@
         if (params["type"] == 3) {
             trackPlayback(data, 3)
         }
+        if (params["type"] == 4) {
+            trackPlayback(data, 4)
+        }
     }, '*')
     // 轨迹回放
     function trackPlayback (data, type) {
@@ -166,6 +169,9 @@
         if (type == 3) {
             removeMarker()
             setMarkerList(data)
+        }
+        if (type == 4) {
+            fitBounds(data)
         }
         
         // if (anim) {
@@ -220,6 +226,10 @@
             }
         }
         
+    }
+    // 平移和缩放地图以将其可见区域包含在指定的地理边界内
+    function fitBounds(arr) {
+        map.fitBounds(arr)
     }
     
 
