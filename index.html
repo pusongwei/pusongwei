@@ -160,13 +160,13 @@
         }
     }, '*')
     // 轨迹回放
-    function trackPlayback (routePath, type) {
+    function trackPlayback (data, type) {
         if (type == 2) {
-            setLines(JSON.stringify(routePath))
+            setLines(JSON.stringify(data))
         }
         if (type == 3) {
             removeMarker()
-            setMarkerList(markers)
+            setMarkerList(data)
         }
         
         // if (anim) {
