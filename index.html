@@ -144,7 +144,6 @@
         // 定义一个变量去接收,然后就可以获得vue传过来的数据
         var data = params["data"]
         if(params["type"] == 1) {
-            console.log("从vue", params);
             mapId = data.mapId;
             accessToken = data.accessToken;
             serviceUrl = data.serviceUrl;
@@ -206,7 +205,7 @@
     function setLines(str) {
         // 路径线
         var list = JSON.parse(str)
-        for(let i = 0; i < list.lenth; i++) {
+        for(let i = 0; i < list.length; i++) {
             var routePath = list[i].path
             if (!routeLine) {
                 routeLine = new vjmap.PolylineArrow({
