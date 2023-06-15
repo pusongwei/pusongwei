@@ -214,6 +214,7 @@
     // 设置多条路径线
     var routeLineList = []
     function setLines(str) {
+        console.log("开始设置路线")
         if(peopleMarker) {
             peopleMarker.remove()
         }
@@ -225,6 +226,7 @@
         routeLineList = []
         // 路径线
         var list = JSON.parse(str)
+        console.log(list)
         for(let i = 0; i < list.length; i++) {
             var routePath = list[i].path
             if (routeLine) {
