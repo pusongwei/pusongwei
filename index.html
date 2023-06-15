@@ -229,7 +229,9 @@
     }
     // 平移和缩放地图以将其可见区域包含在指定的地理边界内
     function fitBounds(arr) {
-        map.fitBounds(arr)
+        map.fitBounds(arr, {
+            padding: {top: 30, bottom:30, left: 30, right: 30}
+        })
     }
     
 
