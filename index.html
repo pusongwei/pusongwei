@@ -44,7 +44,6 @@
     var markers = []
     var peopleMarker = ""
     var clickMarker = ""
-    var canClickMarker = 1
     var setCen = true
     var anim = null
     var realRoute = null
@@ -89,6 +88,11 @@
         markers.map((item,i) => {
             item && item.remove()
         })
+    }
+    // 显示当前人定位marker
+    function showPeopleMarker () {
+        peopleMarker = new vjmap.Marker()
+        peopleMarker.setLngLat(center).addTo(map)
     }
     // 设置地图中心
     function setCenter(str) {
@@ -357,8 +361,7 @@
                 }
             },'*');
 
-            peopleMarker = new vjmap.Marker()
-            peopleMarker.setLngLat([110.86825959129743,35.548700049751275]).addTo(map)
+            
             
             map.on("click", (event) => {
                 let point = map.fromLngLat(event.lngLat);
