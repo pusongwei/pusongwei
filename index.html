@@ -212,15 +212,22 @@
         // })
     }
     // 设置多条路径线
+    var routeLineList = []
     function setLines(str) {
         if(peopleMarker) {
             peopleMarker.remove()
         }
+        if (routeLineList.length) {
+            routeLineList.map((item) => {
+                item.remove()
+            })
+        }
+        routeLineList = []
         // 路径线
         var list = JSON.parse(str)
         for(let i = 0; i < list.length; i++) {
             var routePath = list[i].path
-            if (!routeLine) {
+            if (routeLine) {
                 routeLine = new vjmap.PolylineArrow({
                     path: map.toLngLat(routePath),
                     lineWidth: 10,
@@ -228,8 +235,7 @@
                     lineColor: list[i].color
                 })
                 routeLine.addTo(map);
-            } else {
-                routeLine.setPath(map.toLngLat(routePath))
+                routeLineList.push(routeLine)
             }
         }
         
