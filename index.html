@@ -209,6 +209,9 @@
     }
     // 设置多条路径线
     function setLines(str) {
+        if(peopleMarker) {
+            peopleMarker.remove()
+        }
         // 路径线
         var list = JSON.parse(str)
         for(let i = 0; i < list.length; i++) {
