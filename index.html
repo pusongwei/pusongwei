@@ -229,7 +229,7 @@
         console.log(list)
         for(let i = 0; i < list.length; i++) {
             var routePath = list[i].path
-            if (routeLine) {
+            if (routePath) {
                 console.log(map.toLngLat(routePath))
                 routeLine = new vjmap.PolylineArrow({
                     path: map.toLngLat(routePath),
