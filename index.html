@@ -120,12 +120,6 @@
     }
     // 恢复当前地图中心及缩放大小
     function mapResize() {
-        map.easeTo({
-            zoom: 18,
-            center: center,
-            bearing: 0,
-            pitch: 0
-        })
         uni.postMessage({  
             data: {  
                 action: {
@@ -133,6 +127,12 @@
                 }
             }  
         });
+        map.easeTo({
+            zoom: 18,
+            center: center,
+            bearing: 0,
+            pitch: 0
+        })
         setTimeout(() => {
             setCen = true
         }, 1000)
