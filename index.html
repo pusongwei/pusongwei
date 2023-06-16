@@ -119,7 +119,7 @@
         }
     }
     // 恢复当前地图中心及缩放大小
-    function mapResize() {
+    function mapResizes() {
         uni.postMessage({  
             data: {  
                 action: {
@@ -379,7 +379,7 @@
             map.on("click", (event) => {
                 let point = map.fromLngLat(event.lngLat);
                 console.log(`[${point.x},${point.y}]`)
-                mapResize()
+                mapResizes()
                 // if (canClickMarker  == 1) {
                 //     const pos = {
                 //         lng: point.x,
