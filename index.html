@@ -372,38 +372,21 @@
             map.on("click", (event) => {
                 let point = map.fromLngLat(event.lngLat);
                 console.log(`[${point.x},${point.y}]`)
-                // if (canClickMarker  == 1) {
-                //     const pos = {
-                //         lng: point.x,
-                //         lat: point.y
-                //     }
-                //     if (clickMarker) {
-                //         clickMarker.setLngLat(pos)
-                //     } else {
-                //         clickMarker = new vjmap.DiffusedApertureMarker({
-                //             lngLat: pos
-                //         }, {
-                //             colors: ["#3FB1CE", "rgba(,0,0,0,0)"],
-                //             textColor: "#000"
-                //         }).createMarker();
-                //         clickMarker.addTo(map)
-                //     }
-                    // 向父vue页面发送信息
-                    window.parent.postMessage({
-                        params: {
+                // 向父vue页面发送信息
+                window.parent.postMessage({
+                    params: {
+                        type: 3,
+                        data: [point.x, point.y]
+                    }
+                },'*');
+                uni.postMessage({  
+                    data: {  
+                        action: {
                             type: 3,
                             data: [point.x, point.y]
                         }
-                    },'*');
-                    uni.postMessage({  
-                        data: {  
-                            action: {
-                                type: 3,
-                                data: [point.x, point.y]
-                            }
-                        }  
-                    });
-                // }
+                    }  
+                });
             })
             map.on("move", () => {
                 setCen = false
