@@ -32,7 +32,6 @@
 <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script>
-    alert(1111111111)
     var mapId = "cd209a1f2356";
     var serviceUrl = "https://vjmap.com/server/api/v1";
     var accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MiwiVXNlcm5hbWUiOiJhZG1pbjEiLCJOaWNrTmFtZSI6ImFkbWluMSIsIkF1dGhvcml0eUlkIjoiYWRtaW4iLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjo0ODEzMjY3NjM3LCJpc3MiOiJ2am1hcCIsIm5iZiI6MTY1OTY2NjYzN30.cDXCH2ElTzU2sQU36SNHWoTYTAc4wEkVIXmBAIzWh6M"
@@ -354,13 +353,13 @@
             const navigationControl = new vjmap.NavigationControl();
             map.addControl(navigationControl, "top-right");
             // 地图加载完毕
-            uni.postMessage({  
-                data: {  
-                    action: {
-                        type: 1.1
-                    }
-                }  
-            });
+            // uni.postMessage({  
+            //     data: {  
+            //         action: {
+            //             type: 1.1
+            //         }
+            //     }  
+            // });
             // 向父vue页面发送信息
             window.parent.postMessage({
                 params: {
