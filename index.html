@@ -89,6 +89,19 @@
             item && item.remove()
         })
     }
+    // 添加点击标记 如果已经有点击标记 则点击标记移动位置
+    function setClickMarker (center) {
+        if (!clickMarker) {
+            clickMarker = new vjmap.Marker({color: "red"})
+            clickMarker.setLngLat(center).addTo(map)
+        } else {
+            clickMarker.setLngLat(center)
+        }
+    }
+    // 删除点击标记
+    function clearClickMarker() {
+        clickMarker.remove()
+    }
     // 显示当前人定位marker
     function showPeopleMarker () {
         peopleMarker = new vjmap.Marker()
@@ -167,6 +180,9 @@
             }
             if (params["type"] == 4) {
                 trackPlayback(data, 4)
+            }
+            if (params["type"] == 5) {
+                clearClickMarker()
             }
         }
     }, '*')
@@ -393,6 +409,8 @@
                         }
                     }  
                 });
+                // 点击位置添加标点
+                setClickMarker([point.x, point.y])
             })
             map.on("move", () => {
                 setCen = false
