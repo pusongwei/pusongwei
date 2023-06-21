@@ -388,15 +388,21 @@
                 //         }).createMarker();
                 //         clickMarker.addTo(map)
                 //     }
-                    
-                //     uni.postMessage({  
-                //         data: {  
-                //             action: {
-                //                 type: 3,
-                //                 data: [point.x, point.y]
-                //             }
-                //         }  
-                //     });
+                    // 向父vue页面发送信息
+                    window.parent.postMessage({
+                        params: {
+                            type: 3,
+                            data: [point.x, point.y]
+                        }
+                    },'*');
+                    uni.postMessage({  
+                        data: {  
+                            action: {
+                                type: 3,
+                                data: [point.x, point.y]
+                            }
+                        }  
+                    });
                 // }
             })
             map.on("move", () => {
