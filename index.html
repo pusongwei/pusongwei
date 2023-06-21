@@ -370,6 +370,7 @@
             
             
             map.on("click", (event) => {
+                alert(point.x, point.y)
                 let point = map.fromLngLat(event.lngLat);
                 console.log(`[${point.x},${point.y}]`)
                 // 向父vue页面发送信息
