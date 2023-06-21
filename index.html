@@ -145,23 +145,29 @@
     window.addEventListener("message", function (event) {
         var params = event.data.params;
         // 定义一个变量去接收,然后就可以获得vue传过来的数据
-        var data = params["data"]
-        if(params["type"] == 1) {
-            mapId = data.mapId;
-            accessToken = data.accessToken;
-            serviceUrl = data.serviceUrl;
-            // CAD图key
-            accessKey = data.accessKey
-            loadMap()
-        }
-        if (params["type"] == 2) {
-            trackPlayback(data, 2)
-        }
-        if (params["type"] == 3) {
-            trackPlayback(data, 3)
-        }
-        if (params["type"] == 4) {
-            trackPlayback(data, 4)
+        if (params) {
+            console.log(params)
+            var data = params["data"]
+            if(params["type"] == 1) {
+                if (data ) {
+                    mapId = data.mapId;
+                    accessToken = data.accessToken;
+                    serviceUrl = data.serviceUrl;
+                    // CAD图key
+                    accessKey = data.accessKey
+                }
+               
+                loadMap()
+            }
+            if (params["type"] == 2) {
+                trackPlayback(data, 2)
+            }
+            if (params["type"] == 3) {
+                trackPlayback(data, 3)
+            }
+            if (params["type"] == 4) {
+                trackPlayback(data, 4)
+            }
         }
     }, '*')
     // 轨迹回放
@@ -353,13 +359,13 @@
             const navigationControl = new vjmap.NavigationControl();
             map.addControl(navigationControl, "top-right");
             // 地图加载完毕
-            // uni.postMessage({  
-            //     data: {  
-            //         action: {
-            //             type: 1.1
-            //         }
-            //     }  
-            // });
+            uni.postMessage({  
+                data: {  
+                    action: {
+                        type: 1.1
+                    }
+                }  
+            });
             // 向父vue页面发送信息
             window.parent.postMessage({
                 params: {
@@ -370,8 +376,8 @@
             
             
             map.on("click", (event) => {
-                alert(point.x, point.y)
                 let point = map.fromLngLat(event.lngLat);
+                alert(point.toString())
                 console.log(`[${point.x},${point.y}]`)
                 // 向父vue页面发送信息
                 window.parent.postMessage({
