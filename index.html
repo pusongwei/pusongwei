@@ -111,7 +111,9 @@
     }
     // 显示当前人定位marker
     function showPeopleMarker () {
-        peopleMarker = new vjmap.Marker()
+        if (!peopleMarker) {
+            peopleMarker = new vjmap.Marker()
+        }
         peopleMarker.setLngLat(center).addTo(map)
     }
     // 设置地图中心
