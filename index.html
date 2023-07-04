@@ -53,11 +53,12 @@
     var anim = null
     var realRoute = null
     var lineList = []
+    var markersPosList = []
     // 添加点标记
     function setMarkerList (str) {
         // str = `[{"id":67,"updateTime":"2023-06-08 17:56:33","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86939688130872,35.54867201186224","realName":"系统管理员"},{"id":68,"updateTime":"2023-06-08 17:56:40","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86969368474274,35.54858283586117","realName":"系统管理员"},{"id":69,"updateTime":"2023-06-08 17:56:50","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86937356272364,35.54842796391607","realName":"系统管理员"},{"id":70,"updateTime":"2023-06-08 17:56:58","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86886118906398,35.54855818071097","realName":"系统管理员"},{"id":71,"updateTime":"2023-06-08 17:57:06","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86844907087044,35.548506677274645","realName":"系统管理员"},{"id":72,"updateTime":"2023-06-08 17:57:14","profileId":1,"checkTime":"2023-06-08 17:55:33","files":"","pos":"110.86825959129743,35.548700049751275","realName":"系统管理员"}]`
-        const list = JSON.parse(str)
-        list.map((item, i) => {
+        markersPosList = JSON.parse(str)
+        markersPosList.map((item, i) => {
             const pos = {
                 lng: item.pos.split(",")[0],
                 lat: item.pos.split(",")[1]
@@ -507,16 +508,29 @@
                 //         data: [point.x, point.y]
                 //     }
                 // },'*');
-                uni.postMessage({  
-                    data: {  
-                        action: {
-                            type: 3,
-                            data: [point.x, point.y]
-                        }
-                    }  
-                });
-                // 点击位置添加标点
-                setClickMarker([point.x, point.y])
+                var new_york = new vjmap.LngLat(point.x, point.y);
+                var yuan = true
+                markersPosList.map((item) => {
+                    var pos = item.pos.split(",")
+                    var los_angeles = new vjmap.LngLat(pos[0], pos[1]);
+                    var juli = new_york.distanceTo(los_angeles);
+                    if (juli < 10) {
+                        yuan = false
+                    }
+                })
+                if (yuan) {
+                    uni.postMessage({  
+                        data: {  
+                            action: {
+                                type: 3,
+                                data: [point.x, point.y]
+                            }
+                        }  
+                    });
+                    // 点击位置添加标点
+                    setClickMarker([point.x, point.y])
+                }
+                
             })
             map.on("move", () => {
                 setCen = false
