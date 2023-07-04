@@ -23,7 +23,7 @@
         #map {
             width: 100%;
             height: 100%;
-            margin-top: 100px;
+            margin-top: 0;
         }
         .cursor {
             cursor: pointer;
@@ -501,12 +501,12 @@
                 let point = map.fromLngLat(event.lngLat);
                 console.log(`[${point.x},${point.y}]`)
                 // 向父vue页面发送信息
-                window.parent.postMessage({
-                    params: {
-                        type: 3,
-                        data: [point.x, point.y]
-                    }
-                },'*');
+                // window.parent.postMessage({
+                //     params: {
+                //         type: 3,
+                //         data: [point.x, point.y]
+                //     }
+                // },'*');
                 uni.postMessage({  
                     data: {  
                         action: {
@@ -516,7 +516,7 @@
                     }  
                 });
                 // 点击位置添加标点
-                // setClickMarker([point.x, point.y])
+                setClickMarker([point.x, point.y])
             })
             map.on("move", () => {
                 setCen = false
