@@ -9,17 +9,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.min.js"></script>
     
     <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
     <style>
         * {
             margin: 0;
             padding: 0;
         }
+        html,body {
+            width: 100%;
+            height: 100%;
+        }
         #map {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0px;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
+            padding-top: 100px;
         }
         .cursor {
             cursor: pointer;
@@ -32,6 +36,7 @@
 <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script>
+    var first = 1
     var mapId = "cd209a1f2356";
     var serviceUrl = "https://vjmap.com/server/api/v1";
     var accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MiwiVXNlcm5hbWUiOiJhZG1pbjEiLCJOaWNrTmFtZSI6ImFkbWluMSIsIkF1dGhvcml0eUlkIjoiYWRtaW4iLCJCdWZmZXJUaW1lIjo4NjQwMCwiZXhwIjo0ODEzMjY3NjM3LCJpc3MiOiJ2am1hcCIsIm5iZiI6MTY1OTY2NjYzN30.cDXCH2ElTzU2sQU36SNHWoTYTAc4wEkVIXmBAIzWh6M"
@@ -153,6 +158,7 @@
         // CAD图key
         accessKey = obj.accessKey
         loadMap()
+        // loadOpenLayersMap()
     }
 
     // 接受VUE页面发来的信息
@@ -163,15 +169,18 @@
             console.log(params)
             var data = params["data"]
             if(params["type"] == 1) {
-                if (data ) {
+                if (data) {
                     mapId = data.mapId;
                     accessToken = data.accessToken;
                     serviceUrl = data.serviceUrl;
                     // CAD图key
                     accessKey = data.accessKey
                 }
-               
                 loadMap()
+                if (first == 1) {
+                    first = 2
+                    // loadOpenLayersMap()
+                }
             }
             if (params["type"] == 2) {
                 trackPlayback(data, 2)
@@ -291,6 +300,97 @@
             }
         },'*');
     });
+    function loadOpenLayersMap () {
+        (async () => {
+           
+            let svc = new vjmap.Service(serviceUrl, accessToken)
+            svc.addAccessKey(accessKey)
+            console.log(mapId)
+            let res = await svc.openMap({
+                mapid: mapId,
+                mapopenway: vjmap.MapOpenWay.GeomRender, // 以几何数据渲染方式打开
+                style:  vjmap.openMapLightStyle()
+            })
+            if (res.error) {
+                message.error(res.error)
+            }
+            // 获取地图范围
+            let mapBounds = vjmap.GeoBounds.fromString(res.bounds);
+            let prj = new vjmap.GeoProjection(mapBounds);
+            //自定义投影参数
+            let cadProjection = new ol.proj.Projection({
+                // extent用于确定缩放级别
+                extent: mapBounds.toArray(),
+                units: 'm'
+            });
+            // 设置每级的分辨率
+            let resolutions= [];
+            for(let i = 0; i < 25; i++) {
+                resolutions.push(mapBounds.width() / (512 * Math.pow(2, i - 1)))
+            }
+            // 增加自定义的cad的坐标系
+            ol.proj.addProjection(cadProjection);
+            // 创建openlayer的地图对象
+            let map = new ol.Map({
+                target: 'map', // div的id
+                view: new ol.View({
+                    center: center,  // 地图中心点
+                    projection: cadProjection, // 刚自定义的cad的坐标系
+                    resolutions:resolutions, // 分辨率
+                    zoom: 8 // 初始缩放级别
+                })
+            });
+            // 增加一个瓦片图层
+            let layer = new ol.layer.Tile({
+                // 增加一个瓦片数据源
+                source: new ol.source.TileImage({
+                    url: svc.rasterTileUrl() // 唯杰地图服务提供的cad的栅格瓦片服务地址
+                })
+            });
+            // 在地图中增加上面的瓦片图层
+            map.addLayer(layer);
+
+            map.on('click', (e) => {
+                console.log(`您点击的坐标为： ${JSON.stringify(e.coordinate)}`)
+            });
+            // 增加高德地图底图
+            let gdlayer;
+            const addGaodeMap = async () => {
+                const tileUrl = svc.webMapUrl({
+                    tileCrs: "gcj02",
+                    tileUrl:  [
+                            "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
+                        ],
+                    tileSize: 256,
+                    tileRetina: 1,
+                    tileMaxZoom: 18,
+                    tileShards: "1,2,3,4",
+                    tileToken: "",
+                    tileFlipY: false,
+                    mapbounds: res.bounds,
+                    srs: "EPSG:4546",// 可通过前两位获取 vjmap.transform.getEpsgParam(vjmap.transform.EpsgCrsTypes.CGCS2000, 39).epsg
+                    // 因为sys_cad2000这个图只有6位，没有带系。需要在坐标转换前平移下带系  https://blog.csdn.net/thinkpang/article/details/124172626
+                    fourParameterBefore: "39000000,0,1,0"
+                })
+
+
+                // 增加一个瓦片图层
+                gdlayer = new ol.layer.Tile({
+                    // 增加一个瓦片数据源
+                    source: new ol.source.TileImage({
+                        url: tileUrl
+                    })
+                });
+                gdlayer.setZIndex(-1);
+                // 在地图中增加上面的瓦片图层
+                map.addLayer(gdlayer);
+
+
+                
+            }
+            addGaodeMap()
+        })();
+    }
     function loadMap() {
         (async () => {
             // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
@@ -298,6 +398,7 @@
             svc.addAccessKey(accessKey)
             // 根据地图范围建立经纬度投影坐标系
             let prj = new vjmap.LnglatProjection();
+            
             // 地图对象
             map = new vjmap.Map({
                 container: 'map', // DIV容器ID
@@ -344,6 +445,7 @@
                 message.error(res.error)
             }
             let layer = res.layer;//图层样式名
+
             
             let cadEpsg = "EPSG:4546";// cad图的espg代号
             // 增加cad的wms图层
@@ -355,6 +457,9 @@
                 
                 webMapType: "GCJ02" // 底图是高德地图，所以要选GCJ02,如果是天地图，可以不用填此项
             })
+
+           
+
             map.addSource('wms-test-source', {
                 'type': 'raster',
                 'tiles': [
@@ -411,7 +516,7 @@
                     }  
                 });
                 // 点击位置添加标点
-                setClickMarker([point.x, point.y])
+                // setClickMarker([point.x, point.y])
             })
             map.on("move", () => {
                 setCen = false
