@@ -179,10 +179,10 @@
                     // CAD图key
                     accessKey = data.accessKey
                 }
+                loadMap()
                 if (first == 1) {
                     first = 2
-                    // loadMap()
-                    loadOpenLayersMap()
+                    // loadOpenLayersMap()
                 }
             }
             if (params["type"] == 2) {
@@ -387,6 +387,9 @@
                 gdlayer.setZIndex(-1);
                 // 在地图中增加上面的瓦片图层
                 map.addLayer(gdlayer);
+
+
+                
             }
             addGaodeMap()
         })();
