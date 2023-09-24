@@ -593,9 +593,13 @@
             })
 
             let layers = svc.getMapLayers();
-            
-            
-            // setTuCeng(arr)
+            let arr = []
+            layers.map((item) => {
+                arr.push(item.name)
+            })
+            arr.length = 4
+            console.log(arr)
+            setTuCeng(arr)
             uni.postMessage({  
                 data: {  
                     action: {
@@ -609,6 +613,9 @@
         })();
     }
     function setTuCeng (arr) {
+        if (typeof arr === "string") {
+            arr = JSON.parse(arr)
+        }
         (async () => {
             let cadEpsg = "EPSG:4546";// cad图的espg代号
             let res1 = await svc.cmdSwitchLayers(arr); // 调用唯杰服务切换图层，返回图层id {layerid： "xxxx"}
@@ -621,6 +628,7 @@
                 crs: cadEpsg,
                 webMapType: "GCJ02" // 底图是高德地图，所以要选GCJ02,如果是天地图，可以不用填此项
             })
+            console.log(wmsUrl)
             map.addSource('wms-test-source', {
                 'type': 'raster',
                 'tiles': [
