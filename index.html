@@ -613,6 +613,8 @@
         })();
     }
     function setTuCeng (arr) {
+        console.log(arr)
+        console.log(typeof arr)
         if (typeof arr === "string") {
             arr = JSON.parse(arr)
         }
@@ -628,7 +630,6 @@
                 crs: cadEpsg,
                 webMapType: "GCJ02" // 底图是高德地图，所以要选GCJ02,如果是天地图，可以不用填此项
             })
-            console.log(wmsUrl)
             map.addSource('wms-test-source', {
                 'type': 'raster',
                 'tiles': [
