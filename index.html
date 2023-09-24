@@ -593,13 +593,6 @@
             })
 
             let layers = svc.getMapLayers();
-            let arr = []
-            layers.map((item) => {
-                arr.push(item.name)
-            })
-            arr.length = 4
-            console.log(arr)
-            setTuCeng(arr)
             uni.postMessage({  
                 data: {  
                     action: {
