@@ -176,8 +176,10 @@
                     serviceUrl = data.serviceUrl;
                     // CAD图key
                     accessKey = data.accessKey
+                    loadMap(data.arr)
+                } else {
+                    loadMap()
                 }
-                loadMap()
                 // loadOpenLayersMap()
             }
             if (params["type"] == 2) {
@@ -450,7 +452,7 @@
             
         })();
     }
-    function loadMap() {
+    function loadMap(arr) {
         (async () => {
             // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
              svc = new vjmap.Service(serviceUrl, accessToken)
@@ -504,8 +506,14 @@
                 // 如果打开出错
                 message.error(res.error)
             }
-            let layer = res.layer;//图层样式名
-            
+            let layer
+            if (arr) {
+                let res1 = await svc.cmdSwitchLayers(arr); // 调用唯杰服务切换图层，返回图层id {layerid： "xxxx"}
+                layer = res1.id
+            } else {
+                layer = res.layer;//图层样式名
+            }
+            console.log(layer)
             let cadEpsg = "EPSG:4546";// cad图的espg代号
             // 增加cad的wms图层
             let wmsUrl = svc.wmsTileUrl({
