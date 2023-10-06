@@ -507,9 +507,10 @@
                 message.error(res.error)
             }
             let layer
+            arr =  ["煤巷","设计巷道","岩巷设计"]
             if (arr) {
                 let res1 = await svc.cmdSwitchLayers(arr); // 调用唯杰服务切换图层，返回图层id {layerid： "xxxx"}
-                layer = res1.id
+                layer = res1.layerid
             } else {
                 layer = res.layer;//图层样式名
             }
@@ -626,7 +627,7 @@
             map.removeSource('wms-test-source');
             wmsUrl = svc.wmsTileUrl({
                 mapid: mapId, // 地图id
-                layers: res1.id, // 图层名称
+                layers: res1.id || res1.layerid, // 图层名称
                 srs: "EPSG:3857",
                 crs: cadEpsg,
                 webMapType: "GCJ02" // 底图是高德地图，所以要选GCJ02,如果是天地图，可以不用填此项
