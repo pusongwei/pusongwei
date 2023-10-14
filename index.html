@@ -124,7 +124,7 @@
         }
     }
     // 设置路径线
-    function setLine(str) {
+    function setLine(str, color) {
         // 路径线
         var routePath = JSON.parse(str)
         if (!routeLine) {
@@ -132,11 +132,28 @@
                 path: map.toLngLat(routePath),
                 lineWidth: 10,
                 showDir: true,
-                lineColor: '#009EFF'
+                lineColor: color
             })
             routeLine.addTo(map);
         } else {
             routeLine.setPath(map.toLngLat(routePath))
+        }
+    }
+    // 设置导航路径线
+    var daohangLine = []
+    function setdaohangLine(str, color) {
+        // 路径线
+        var routePath = JSON.parse(str)
+        if (!daohangLine) {
+            daohangLine = new vjmap.PolylineArrow({
+                path: map.toLngLat(routePath),
+                lineWidth: 10,
+                showDir: true,
+                lineColor: color
+            })
+            daohangLine.addTo(map);
+        } else {
+            daohangLine.setPath(map.toLngLat(routePath))
         }
     }
     // 恢复当前地图中心及缩放大小
@@ -273,6 +290,7 @@
         }
         
     }
+
     // 平移和缩放地图以将其可见区域包含在指定的地理边界内
     function fitBounds(arr) {
         map.fitBounds(arr, {
