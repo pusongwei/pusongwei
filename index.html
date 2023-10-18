@@ -34,6 +34,7 @@
 </body>
 <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.1/proj4-src.min.js"></script>
 <script>
     var first = 1
     var mapId = "cd209a1f2356";
@@ -43,7 +44,7 @@
     var accessKey = "akd538cb61c41daa3d"
 
     var map = ""
-    var center = [110.8680839066069,35.548207938846645]
+    var center = [112.40427073819657, 35.574472506700104]
     var routeLine = ""
     var markers = []
     var peopleMarker = ""
@@ -179,7 +180,7 @@
         loadMap(obj.arr, obj.isRoadway)
         // loadOpenLayersMap()
     }
-    // loadMap()
+    loadMap()
 
     // 接受VUE页面发来的信息
     // window.addEventListener("message", function (event) {
@@ -533,14 +534,15 @@
             } else {
                 layer = res.layer;//图层样式名
             }
-            console.log(layer)
-            let cadEpsg = "EPSG:4546";// cad图的espg代号
+            var fromProjection = "+proj=tmerc +lat_0=0 +lon_0=112.5 +k=1 +x_0=500000 +y_0=0 +ellps=krass +towgs84=15.8,-154.4,-82.3,0,0,0,0 +units=m +no_defs" ;
+            var toProjection ="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+            var transformPoint = proj4(fromProjection,toProjection,[491278.162,3938380.151,648]);//[y,x,z]
             // 增加cad的wms图层
             let wmsUrl = svc.wmsTileUrl({
                 mapid: mapId, // 地图id
                 layers: layer, // 图层名称
                 srs: "EPSG:3857",
-                crs: cadEpsg,
+                crs: fromProjection,
                 webMapType: "GCJ02" // 底图是高德地图，所以要选GCJ02,如果是天地图，可以不用填此项
             })
 
@@ -584,7 +586,9 @@
             
             map.on("click", (event) => {
                 let point = map.fromLngLat(event.lngLat);
-                console.log(`[${point.x},${point.y}]`)
+                var transformPoint = proj4(toProjection,fromProjection,point);//[y,x,z]
+                console.log(event)
+                console.log(transformPoint)
                 // 向父vue页面发送信息
                 // window.parent.postMessage({
                 //     params: {
@@ -607,7 +611,7 @@
                         data: {  
                             action: {
                                 type: 3,
-                                data: [point.x, point.y]
+                                data: [[point.x, point.y],[transformPoint.x, transformPoint.y]]
                             }
                         }  
                     });
@@ -647,7 +651,7 @@
             arr = JSON.parse(arr)
         }
         (async () => {
-            let cadEpsg = "EPSG:4546";// cad图的espg代号
+            let cadEpsg = "EPSG:4214";// cad图的espg代号
             let res1 = await svc.cmdSwitchLayers(arr); // 调用唯杰服务切换图层，返回图层id {layerid： "xxxx"}
             map.removeLayer("wms-test-layer")
             map.removeSource('wms-test-source');
