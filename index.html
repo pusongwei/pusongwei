@@ -117,11 +117,13 @@
         peopleMarker.setLngLat(center).addTo(map)
     }
     // 设置地图中心
-    function setCenter(str) {
+    function setCenter(str, type) {
         center = str.split(",")
-        peopleMarker.setLngLat(center)
         if (setCen) {
             map.setCenter(center)
+        }
+        if (!type) {
+            peopleMarker.setLngLat(center)
         }
     }
     // 设置路径线
