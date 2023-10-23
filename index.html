@@ -97,6 +97,9 @@
     }
     // 添加点击标记 如果已经有点击标记 则点击标记移动位置
     function setClickMarker (center) {
+        if (typeof center == "string") {
+            center = center.split(",")
+        }
         if (!clickMarker) {
             clickMarker = new vjmap.Marker({color: "red"})
             clickMarker.setLngLat(center).addTo(map)
@@ -267,9 +270,6 @@
     var routeLineList = []
     function setLines(str) {
         console.log("开始设置路线")
-        if(peopleMarker) {
-            peopleMarker.remove()
-        }
         if (routeLineList.length) {
             routeLineList.map((item) => {
                 item.remove()
