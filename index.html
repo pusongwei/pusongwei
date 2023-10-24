@@ -39,6 +39,9 @@
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.1/proj4-src.min.js"></script>
 <script>
+    var fromProjection = "+proj=tmerc +lat_0=0 +lon_0=112.5 +k=1 +x_0=500000 +y_0=0 +ellps=krass +towgs84=15.8,-154.4,-82.3,0,0,0,0 +units=m +no_defs" ;
+    var toProjection ="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+    // proj4(fromProjection,toProjection,[491278.162,3938380.151,648]);//[y,x,z]
     var first = 1
     var mapId = "cd209a1f2356";
     var serviceUrl = "https://vjmap.com/server/api/v1";
@@ -104,7 +107,6 @@
         if (typeof center == "string") {
             center = center.split(",")
         }
-        console.log(center)
         if (!clickMarker) {
             clickMarker = new vjmap.Marker({color: "red"})
             clickMarker.setLngLat(center).addTo(map)
@@ -150,8 +152,10 @@
     }
     // 设置地图显示范围
     function setMapRadius (str) {
-        const obj = JSON.parse(str)
-        map.fitMapBounds(obj);
+        const obj = vjmap.GeoBounds.fromDataExtent(str)
+        // obj.max = proj4(toProjection,fromProjection,obj.max)
+        // obj.min = proj4(toProjection,fromProjection,obj.min)
+        map.fitMapBounds(obj, {padding: 50});
     }
     // 设置导航路径线
     var daohangLine = ""
@@ -193,7 +197,7 @@
         loadMap(obj.arr, obj.isRoadway)
         // loadOpenLayersMap()
     }
-    loadMap()
+    // loadMap()
 
     // 接受VUE页面发来的信息
     // window.addEventListener("message", function (event) {
@@ -330,158 +334,7 @@
             }
         },'*');
     });
-    function loadOpenLayersMap () {
-        (async () => {
-            let svc = new vjmap.Service(serviceUrl, accessToken)
-            svc.addAccessKey(accessKey)
-            
-            let style = {
-                backcolor: 0, // div为深色背景颜色时，这里也传深色背景样式
-                clipbounds: Math.pow(2, 18) // 只传值，不传范围，表示之前的范围放大多少倍
-            }
-            let res = await svc.openMap({
-                mapid: mapId,
-                mapopenway: vjmap.MapOpenWay.GeomRender, // 以几何数据渲染方式打开
-                style: vjmap.openMapDarkStyle() // div为深色背景颜色时，这里也传深色背景样式
-            })
-            if (res.error) {
-                message.error(res.error)
-            }
-            // 获取地图的范围 res.bounds 为打开图后返回的图形范围
-            let mapExtent = vjmap.GeoBounds.fromString(res.bounds);
-            // 根据地图范围建立几何投影坐标系
-            // let prj = new vjmap.GeoProjection(mapExtent);
-            // 如果是图形坐标是经纬度，则根据地图范围建立经纬度投影坐标系
-            let prj = new vjmap.LnglatProjection();
-
-            const abc = proj4(formPro, toPro, center)
-            console.log(vjmap.transform.getEpsgParam(vjmap.transform.EpsgCrsTypes.Beijing54, 39).epsg)
-            console.log(center)
-            let map = new vjmap.Map({
-                container: 'map', // container ID
-                style: svc.rasterStyle(),
-                center: abc,
-                zoom: 1,
-                pitch: 0,
-                pitchWithRotate: false, // 倾斜
-                dragRotate: false, // 拖动旋转
-                touchZoomRotate: true, // 捏合旋转和缩放
-                doubleClickZoom: false, // 双击缩放
-                renderWorldCopies: false // 不显示多屏地图
-            });
-            map.attach(svc, prj);
-            map.setCenter(center)
-            map.addControl(new vjmap.NavigationControl());
-            map.addControl(new vjmap.MousePositionControl({showZoom: true}));
-
-           
-            console.log(res.bounds)
-            map.on("click", (event) => {
-                let point = map.fromLngLat(event.lngLat);
-                console.log(`[${point.x},${point.y}]`)
-            })
-
-            // 增加高德地图底图
-            const addGaodeMap = async (isRoadway) => {
-                const tileUrl = svc.webMapUrl({
-                    tileCrs: "gcj02",
-                    tileUrl:  isRoadway ? [
-                            "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
-                        ] :
-                        /* 如果用影像 */
-                        [
-                            "https://webst0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                            "https://webst0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
-                        ],
-                    tileSize: 256,
-                    tileRetina: 1,
-                    tileMaxZoom: 18,
-                    tileShards: "1,2,3,4",
-                    tileToken: "",
-                    tileFlipY: false,
-                    mapbounds: res.bounds,
-                    srs: "EPSG:4546",// 可通过前两位获取 vjmap.transform.getEpsgParam(vjmap.transform.EpsgCrsTypes.CGCS2000, 39).epsg
-                    // 因为sys_cad2000这个图只有6位，没有带系。需要在坐标转换前平移下带系  https://blog.csdn.net/thinkpang/article/details/124172626
-                })
-
-                map.addSource('web-gaode-source', {
-                    'type': 'raster',
-                    'tiles': [
-                        tileUrl
-                    ],
-                    'tileSize': 256
-                });
-                map.addLayer({
-                        'id': 'web-gaode-layer',
-                        'type': 'raster',
-                        'source': 'web-gaode-source',
-                        'paint': { "raster-opacity": 1 }
-                    }
-                );
-                let layers = map.getStyle().layers
-                // 把这个图层放至所有图层的最下面
-                map.moveLayer('web-gaode-layer', layers[0].id)
-
-                // cad坐标与高德坐标相互转换示例
-                // let webCo = await cad2webCoordinate(center, false); // cad转高德
-                // let cadCo = await web2cadCoordinate(webCo, false); // 高德转cad
-                // console.log(center, webCo, cadCo)
-            }
-            setTimeout(() => {
-                addGaodeMap(true)
-            }, 1000)
-            
-
-            let layers = svc.getMapLayers();
-            // 通过图层名称来查找图层id
-            const getLayerIdByName = name => {
-                return svc.getMapLayers().findIndex(layer => layer.name === name)
-            }
-
-            // 增加实体图层判断条件,只要满足任何一种类型即可,如 ['图层一','图层二']
-            const conditionLayers = (layers1, inputIsIndex) => {
-                if (!Array.isArray(layers1)) layers1 = [layers1];// 先转成数组，再统一用数组去算吧
-                if (!inputIsIndex) {
-                    // 如果输入的不是图层索引，是图层名称，则需要转成图层索引
-                    layers1 = layers1.map(layer => getLayerIdByName(layer)); // 把图层名称转为图层索引，在矢量瓦片中图层是用索引来表示的
-                }
-                return [
-                    "match",
-                    ['get', 'layer'],
-                    layers1,
-                    true,
-                    false
-                ]
-            }
-            // 切换图层 onLayers 要显示的图层名称数组
-            const switchLayers = (onLayers) => {
-               // 获取之前的默认的矢量图层样式，然后在当前样式中，对矢量图层的数据进行图层进行过滤
-                let style = map.getStyle();
-                let vectorStyle = svc.vectorStyle();
-                let vectorLayerIds = vectorStyle.layers.map(layer => layer.id);
-                let filter = conditionLayers(onLayers, false);
-                for(let i = 0; i < style.layers.length; i++) {
-                    if (vectorLayerIds.includes(style.layers[i].id)) {
-                        style.layers[i].filter = filter; // 设置过滤条件
-                    }
-                }
-                console.log(style)
-                map.setStyle(style);
-            }
-            
-            // let arr = []
-            // console.log(layers)
-            // layers.forEach((item) => {
-            //     if (arr.length < 1) {
-            //         arr.push(item.name)
-            //     }
-            // })
-            // map.switchLayers(svc, arr)
-
-            
-            
-        })();
-    }
+    
     function loadMap(arr, isRoadway) {
         (async () => {
             // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
@@ -544,9 +397,6 @@
             } else {
                 layer = res.layer;//图层样式名
             }
-            var fromProjection = "+proj=tmerc +lat_0=0 +lon_0=112.5 +k=1 +x_0=500000 +y_0=0 +ellps=krass +towgs84=15.8,-154.4,-82.3,0,0,0,0 +units=m +no_defs" ;
-            var toProjection ="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-            var transformPoint = proj4(fromProjection,toProjection,[491278.162,3938380.151,648]);//[y,x,z]
             // 增加cad的wms图层
             let wmsUrl = svc.wmsTileUrl({
                 mapid: mapId, // 地图id
@@ -592,7 +442,6 @@
                 }
             },'*');
 
-            
             
             map.on("click", (event) => {
                 let point = map.fromLngLat(event.lngLat);
@@ -660,7 +509,6 @@
             arr = JSON.parse(arr)
         }
         (async () => {
-            var fromProjection = "+proj=tmerc +lat_0=0 +lon_0=112.5 +k=1 +x_0=500000 +y_0=0 +ellps=krass +towgs84=15.8,-154.4,-82.3,0,0,0,0 +units=m +no_defs" ;
             let res1 = await svc.cmdSwitchLayers(arr); // 调用唯杰服务切换图层，返回图层id {layerid： "xxxx"}
             map.removeLayer("wms-test-layer")
             map.removeSource('wms-test-source');
