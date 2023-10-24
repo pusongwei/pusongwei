@@ -145,6 +145,11 @@
             routeLine.setPath(map.toLngLat(routePath))
         }
     }
+    // 设置地图显示范围
+    function setMapRadius (str) {
+        const obj = JSON.parse(str)
+        map.fitMapBounds(obj);
+    }
     // 设置导航路径线
     var daohangLine = ""
     function setdaohangLine(str, color) {
