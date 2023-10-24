@@ -100,9 +100,11 @@
     }
     // 添加点击标记 如果已经有点击标记 则点击标记移动位置
     function setClickMarker (center) {
+        
         if (typeof center == "string") {
             center = center.split(",")
         }
+        console.log(center)
         if (!clickMarker) {
             clickMarker = new vjmap.Marker({color: "red"})
             clickMarker.setLngLat(center).addTo(map)
@@ -125,9 +127,7 @@
     // 设置地图中心
     function setCenter(str, type) {
         center = str.split(",")
-        if (setCen) {
-            map.setCenter(center)
-        }
+        map.setCenter(center)
         if (!type) {
             peopleMarker.setLngLat(center)
         }
@@ -597,8 +597,7 @@
             map.on("click", (event) => {
                 let point = map.fromLngLat(event.lngLat);
                 var transformPoint = proj4(toProjection,fromProjection,point);//[y,x,z]
-                console.log(event)
-                console.log(transformPoint)
+                console.log(point)
                 // 向父vue页面发送信息
                 // window.parent.postMessage({
                 //     params: {
