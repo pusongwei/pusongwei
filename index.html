@@ -353,7 +353,7 @@
                             ] :
                             /* 如果用影像 */
                             [
-                                "https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"
+                                "https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
                             ],
                         }
                     },
@@ -479,16 +479,16 @@
                     // 点击位置添加标点
                     // setClickMarker([point.x, point.y])
                     setCenter([point.x, point.y].toString(), 1)
-                    setTimeout(() => {
-                        let layers = svc.getMapLayers();
-                        let brr = []
-                        layers.map((item) => {
-                            if (brr.length < 10) {
-                                brr.push(item.name)
-                            }
-                        })
-                        setTuCeng(brr)
-                    }, 2000)
+                    // setTimeout(() => {
+                    //     let layers = svc.getMapLayers();
+                    //     let brr = []
+                    //     layers.map((item) => {
+                    //         if (brr.length < 10) {
+                    //             brr.push(item.name)
+                    //         }
+                    //     })
+                    //     setTuCeng(brr)
+                    // }, 2000)
                 }
                 
             })
@@ -549,6 +549,26 @@
                 }
             );
         })();
+    }
+    function setDitu (isRoadway) {
+        const style = map.getStyle()
+        const tileUrl = svc.webMapUrl({
+            tileCrs: "gcj02",
+            tileUrl: "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+            tileSize: 256,
+            tileRetina: 1,
+            tileShards: "1,2,3,4",
+            tileToken: "",
+            tileFlipY: false
+        })
+        if (isRoadway == 1) {
+            style.sources.gaode.tiles = [tileUrl]
+        } else {
+            style.sources.gaode.tiles = [
+                "https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"
+            ]
+        }
+        map.setStyle(style)
     }
     
     
