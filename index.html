@@ -413,12 +413,14 @@
                 message.error(res.error)
             }
             let layer
+            // arr = ["0","图例","三线","积水区","周边矿井","采区划分","保安煤柱"]
             if (arr) {
                 let res1 = await svc.cmdSwitchLayers(arr); // 调用唯杰服务切换图层，返回图层id {layerid： "xxxx"}
                 layer = res1.layerid
             } else {
                 layer = res.layer;//图层样式名
             }
+            console.log(layer)
             // 增加cad的wms图层
             let wmsUrl = svc.wmsTileUrl({
                 mapid: mapId, // 地图id
@@ -496,7 +498,7 @@
                         }  
                     });
                     // 点击位置添加标点
-                    setClickMarker([point.x, point.y])
+                    // setClickMarker([point.x, point.y])
                     // setCenter([point.x, point.y].toString(), 1)
                     // setTimeout(() => {
                     //     let layers = svc.getMapLayers();
