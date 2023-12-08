@@ -156,7 +156,12 @@
         num = num ? Number(num) : 50
         // obj.max = proj4(toProjection,fromProjection,obj.max)
         // obj.min = proj4(toProjection,fromProjection,obj.min)
-        map.fitMapBounds(obj, [50, 50, num, 50]);
+        map.fitMapBounds(obj, {
+            left: 100,
+            top: 100,
+            right: 100,
+            bottom: 300
+        });
     }
     // 设置导航路径线
     var daohangLine = ""
