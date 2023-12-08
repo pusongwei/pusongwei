@@ -151,11 +151,12 @@
         }
     }
     // 设置地图显示范围
-    function setMapRadius (str) {
+    function setMapRadius (str, num) {
         const obj = vjmap.GeoBounds.fromDataExtent(str)
+        num = num ? Number(num) : 50
         // obj.max = proj4(toProjection,fromProjection,obj.max)
         // obj.min = proj4(toProjection,fromProjection,obj.min)
-        map.fitMapBounds(obj, {padding: 50});
+        map.fitMapBounds(obj, [50, 50, num, 50]);
     }
     // 设置导航路径线
     var daohangLine = ""
