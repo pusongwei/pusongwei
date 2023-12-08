@@ -151,18 +151,13 @@
         }
     }
     // 设置地图显示范围
-    function setMapRadius (str, num) {
+    function setMapRadius (str, padding) {
         const obj = vjmap.GeoBounds.fromDataExtent(str)
-        num = num ? Number(num) : 50
+        padding = padding ? JSON.parse(padding) : 50
         // obj.max = proj4(toProjection,fromProjection,obj.max)
         // obj.min = proj4(toProjection,fromProjection,obj.min)
         map.fitMapBounds(obj, {
-            padding: {
-                left: 50,
-                top: 50,
-                right: 50,
-                bottom: num
-            }
+            padding: padding
         });
     }
     // 设置导航路径线
