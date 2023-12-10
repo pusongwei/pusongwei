@@ -342,31 +342,18 @@
             // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
             svc = new vjmap.Service(serviceUrl, accessToken)
             svc.addAccessKey(accessKey)
+            // 根据地图范围建立经纬度投影坐标系
+            let prj = new vjmap.LnglatProjection();
             let tileUrl = ""
             if (isRoadway == 1) {
-                tileUrl = svc.webMapUrl({
-                    tileCrs: "gcj02",
-                    tileUrl: "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
-                    tileSize: 256,
-                    tileRetina: 1,
-                    tileShards: "1,2,3,4",
-                    tileToken: "",
-                    tileFlipY: false
-                })
+                tileUrl = ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"]
             } else {
-                tileUrl = svc.webMapUrl({
-                    tileCrs: "gcj02",
-                    tileUrl: [
-                        "https://webst0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                        "https://webst0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
-                    ],
-                    tileSize: 256,
-                    tileRetina: 1,
-                    tileShards: "1,2,3,4",
-                    tileToken: "",
-                    tileFlipY: false
-                })
+                tileUrl = ["https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                        "https://webst02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                        "https://webst03.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                        "https://webst04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"]
             }
+            console.log(tileUrl)
             // 地图对象
             map = new vjmap.Map({
                 container: 'map', // DIV容器ID
@@ -377,7 +364,7 @@
                     sources: {
                         gaode: {
                             type: 'raster',
-                            tiles:  [ tileUrl ],
+                            tiles:  tileUrl,
                         }
                     },
                     layers: [{
@@ -397,8 +384,7 @@
                 renderWorldCopies: false // 不显示多屏地图
             });
             
-            // 根据地图范围建立经纬度投影坐标系
-            let prj = new vjmap.LnglatProjection();
+            
             
             // 关联服务对象和投影对象
             map.attach(svc, prj);
@@ -423,7 +409,6 @@
             } else {
                 layer = res.layer;//图层样式名
             }
-            console.log(layer)
             // 增加cad的wms图层
             let wmsUrl = svc.wmsTileUrl({
                 mapid: mapId, // 地图id
@@ -469,8 +454,15 @@
                 }
             },'*');
 
-            
+            setClickMarker([116.207672,39.994943])
+            let type1 = 1
             map.on("click", (event) => {
+                // if (type1 == 1) {
+                //     type1 = 2
+                // } else {
+                //     type1 = 1
+                // }
+                // setDitu(type1)
                 let point = map.fromLngLat(event.lngLat);
                 var transformPoint = proj4(toProjection,fromProjection,point);//[y,x,z]
                 console.log(point)
@@ -491,8 +483,9 @@
                         yuan = false
                     }
                 })
+                
                 // const str = `[[112.439027,35.45133],["112.43888","35.451419"],["112.438746","35.451272"],["112.438698","35.45125"],["112.438646","35.451241"],["112.438572","35.451241"],["112.438572","35.451241"],["112.438433","35.451285"],["112.438342","35.451332"],["112.437218","35.452018"],["112.437023","35.452166"],["112.436905","35.45227"],["112.436745","35.452431"],["112.436419","35.452865"],["112.436302","35.452964"],["112.436302","35.452964"],["112.436272","35.452995"],["112.436137","35.453103"],["112.435556","35.453481"],["112.435373","35.453563"],["112.4352","35.453628"],["112.434978","35.453672"],["112.434748","35.45372"],["112.434635","35.453759"],["112.434284","35.453906"],["112.433733","35.454149"],["112.433511","35.45424"],["112.43339","35.45428"],["112.433168","35.454319"],["112.432878","35.454345"],["112.432431","35.454392"],["112.432431","35.454392"],["112.431697","35.454475"],["112.431693","35.454475"],["112.431306","35.454431"],["112.431302","35.454427"],["112.430872","35.453689"],["112.430751","35.453455"],["112.430734","35.453411"],["112.430734","35.453381"],["112.43072","35.45332"],["112.43072","35.45332"],["112.430712","35.453203"],["112.430710","35.453201"]]`
-                // setMapRadius(str)
+                // setMapRadius(str, '{"left":50,"right":50,"top":250,"bottom":200}')
                 // setdaohangLine(str, '#009EFF')
                 if (yuan) {
                     uni.postMessage({  
@@ -517,7 +510,7 @@
                     //     setTuCeng(brr)
                     // }, 2000)
                 }
-                
+                // setTuCeng(brr)
             })
             map.on("move", () => {
                 setCen = false
@@ -526,10 +519,11 @@
             let layers = svc.getMapLayers();
             let brr = []
             layers.map((item) => {
-                // if (brr.length < 10) {
+                if (!item.isOff) {
                     brr.push(item.name)
-                // }
+                }
             })
+            console.log(layers)
             // console.log(brr)
             // setTuCeng(brr)
             uni.postMessage({  
@@ -579,32 +573,17 @@
     }
     function setDitu (isRoadway) {
         const style = map.getStyle()
+        let tileUrl = ""
         if (isRoadway == 1) {
-            const tileUrl = svc.webMapUrl({
-                tileCrs: "gcj02",
-                tileUrl: "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
-                tileSize: 256,
-                tileRetina: 1,
-                tileShards: "1,2,3,4",
-                tileToken: "",
-                tileFlipY: false
-            })
-            style.sources.gaode.tiles = [tileUrl]
+            tileUrl = ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"]
         } else {
-            const tileUrl = svc.webMapUrl({
-                tileCrs: "gcj02",
-                tileUrl: [
-                    "https://webst0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                    "https://webst0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
-                ],
-                tileSize: 256,
-                tileRetina: 1,
-                tileShards: "1,2,3,4",
-                tileToken: "",
-                tileFlipY: false
-            })
-            style.sources.gaode.tiles = [ tileUrl ]
+            tileUrl = ["https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                    "https://webst02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                    "https://webst03.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                    "https://webst04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"]
         }
+       
+        style.sources.gaode.tiles = tileUrl
         map.setStyle(style)
     }
     
