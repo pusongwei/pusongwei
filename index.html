@@ -8,7 +8,7 @@
     <script type="text/javascript" src="https://vjmap.com/demo/js/vjmap/vjmap.min.js"></script>
     
     <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
     <style>
         * {
@@ -35,7 +35,7 @@
 <body>
 <div id="map"></div>
 </body>
-<script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
+<!-- <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script> -->
 <script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.1/proj4-src.min.js"></script>
 <script>
@@ -151,14 +151,11 @@
         }
     }
     // 设置地图显示范围
-    function setMapRadius (str, padding) {
+    function setMapRadius (str) {
         const obj = vjmap.GeoBounds.fromDataExtent(str)
-        padding = padding ? JSON.parse(padding) : 50
         // obj.max = proj4(toProjection,fromProjection,obj.max)
         // obj.min = proj4(toProjection,fromProjection,obj.min)
-        map.fitMapBounds(obj, {
-            padding: padding
-        });
+        map.fitMapBounds(obj, {padding: 50});
     }
     // 设置导航路径线
     var daohangLine = ""
@@ -200,7 +197,7 @@
         loadMap(obj.arr, obj.isRoadway)
         // loadOpenLayersMap()
     }
-    // loadMap()
+    loadMap()
 
     // 接受VUE页面发来的信息
     // window.addEventListener("message", function (event) {
@@ -337,34 +334,27 @@
             }
         },'*');
     });
+    
     function loadMap(arr, isRoadway) {
         (async () => {
-            // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
-            svc = new vjmap.Service(serviceUrl, accessToken)
-            svc.addAccessKey(accessKey)
-            // 根据地图范围建立经纬度投影坐标系
-            let prj = new vjmap.LnglatProjection();
-            let tileUrl = ""
-            if (isRoadway == 1) {
-                tileUrl = ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"]
-            } else {
-                tileUrl = ["https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                        "https://webst02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                        "https://webst03.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                        "https://webst04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"]
-            }
-            console.log(tileUrl)
+            
             // 地图对象
             map = new vjmap.Map({
                 container: 'map', // DIV容器ID
                 style: {
-                    // version: 8,
-                    version: svc.styleVersion(),
-                    glyphs: svc.glyphsUrl(),
+                    version: 8,
+                    // version: svc.styleVersion(),
+                    // glyphs: svc.glyphsUrl(),
                     sources: {
                         gaode: {
                             type: 'raster',
-                            tiles:  tileUrl,
+                            tiles:  isRoadway == 1 ? [
+                                "https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
+                            ] :
+                            /* 如果用影像 */
+                            [
+                                "https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                            ],
                         }
                     },
                     layers: [{
@@ -376,15 +366,17 @@
                 center: center,
                 zoom: 16,
                 pitch: 0,
-                maxZoom: 18,
                 pitchWithRotate: false, // 倾斜
                 dragRotate: false, // 拖动旋转
                 touchZoomRotate: true, // 捏合旋转和缩放
                 doubleClickZoom: false, // 双击缩放
                 renderWorldCopies: false // 不显示多屏地图
             });
-            
-            
+            // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
+            svc = new vjmap.Service(serviceUrl, accessToken)
+            svc.addAccessKey(accessKey)
+            // 根据地图范围建立经纬度投影坐标系
+            let prj = new vjmap.LnglatProjection();
             
             // 关联服务对象和投影对象
             map.attach(svc, prj);
@@ -402,7 +394,6 @@
                 message.error(res.error)
             }
             let layer
-            // arr = ["0","图例","三线","积水区","周边矿井","采区划分","保安煤柱"]
             if (arr) {
                 let res1 = await svc.cmdSwitchLayers(arr); // 调用唯杰服务切换图层，返回图层id {layerid： "xxxx"}
                 layer = res1.layerid
@@ -454,15 +445,8 @@
                 }
             },'*');
 
-            let type1 = 1
+            
             map.on("click", (event) => {
-                // setCenter("116.207672,39.994943")
-                // if (type1 == 1) {
-                //     type1 = 2
-                // } else {
-                //     type1 = 1
-                // }
-                // setDitu(type1)
                 let point = map.fromLngLat(event.lngLat);
                 var transformPoint = proj4(toProjection,fromProjection,point);//[y,x,z]
                 console.log(point)
@@ -483,10 +467,6 @@
                         yuan = false
                     }
                 })
-                
-                // const str = `[[112.439027,35.45133],["112.43888","35.451419"],["112.438746","35.451272"],["112.438698","35.45125"],["112.438646","35.451241"],["112.438572","35.451241"],["112.438572","35.451241"],["112.438433","35.451285"],["112.438342","35.451332"],["112.437218","35.452018"],["112.437023","35.452166"],["112.436905","35.45227"],["112.436745","35.452431"],["112.436419","35.452865"],["112.436302","35.452964"],["112.436302","35.452964"],["112.436272","35.452995"],["112.436137","35.453103"],["112.435556","35.453481"],["112.435373","35.453563"],["112.4352","35.453628"],["112.434978","35.453672"],["112.434748","35.45372"],["112.434635","35.453759"],["112.434284","35.453906"],["112.433733","35.454149"],["112.433511","35.45424"],["112.43339","35.45428"],["112.433168","35.454319"],["112.432878","35.454345"],["112.432431","35.454392"],["112.432431","35.454392"],["112.431697","35.454475"],["112.431693","35.454475"],["112.431306","35.454431"],["112.431302","35.454427"],["112.430872","35.453689"],["112.430751","35.453455"],["112.430734","35.453411"],["112.430734","35.453381"],["112.43072","35.45332"],["112.43072","35.45332"],["112.430712","35.453203"],["112.430710","35.453201"]]`
-                // setMapRadius(str, '{"left":50,"right":50,"top":250,"bottom":200}')
-                // setdaohangLine(str, '#009EFF')
                 if (yuan) {
                     uni.postMessage({  
                         data: {  
@@ -498,7 +478,7 @@
                     });
                     // 点击位置添加标点
                     // setClickMarker([point.x, point.y])
-                    // setCenter([point.x, point.y].toString(), 1)
+                    setCenter([point.x, point.y].toString(), 1)
                     // setTimeout(() => {
                     //     let layers = svc.getMapLayers();
                     //     let brr = []
@@ -510,7 +490,7 @@
                     //     setTuCeng(brr)
                     // }, 2000)
                 }
-                // setTuCeng(brr)
+                
             })
             map.on("move", () => {
                 setCen = false
@@ -519,11 +499,10 @@
             let layers = svc.getMapLayers();
             let brr = []
             layers.map((item) => {
-                if (!item.isOff) {
+                // if (brr.length < 10) {
                     brr.push(item.name)
-                }
+                // }
             })
-            console.log(layers)
             // console.log(brr)
             // setTuCeng(brr)
             uni.postMessage({  
@@ -573,17 +552,22 @@
     }
     function setDitu (isRoadway) {
         const style = map.getStyle()
-        let tileUrl = ""
+        const tileUrl = svc.webMapUrl({
+            tileCrs: "gcj02",
+            tileUrl: "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+            tileSize: 256,
+            tileRetina: 1,
+            tileShards: "1,2,3,4",
+            tileToken: "",
+            tileFlipY: false
+        })
         if (isRoadway == 1) {
-            tileUrl = ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"]
+            style.sources.gaode.tiles = [tileUrl]
         } else {
-            tileUrl = ["https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                    "https://webst02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                    "https://webst03.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                    "https://webst04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"]
+            style.sources.gaode.tiles = [
+                "https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"
+            ]
         }
-       
-        style.sources.gaode.tiles = tileUrl
         map.setStyle(style)
     }
     
