@@ -397,14 +397,14 @@
             let res = await svc.openMap({
                 mapid: mapId, // 地图ID
                 mapopenway: vjmap.MapOpenWay.GeomRender, // 以几何数据渲染方式打开
-                style: svc.vectorStyle()
+                style: vjmap.openMapDarkStyle()
             })
             if (res.error) {
                 // 如果打开出错
                 message.error(res.error)
             }
             let layer
-            // arr = ["0","图例","三线","积水区","周边矿井","采区划分","保安煤柱"]
+            // arr = ['三线', '积水区', '周边矿井', '采区划分', '保安煤柱', '断层', '陷落柱', '地面', '现综采月进尺', '底板高程', '导线点', '综采小柱状', '采空区', '综采月进尺', '井田边界', '巷道名称', '岩巷', '改单线煤巷', '勘探线', '老空巷道', '井筒注记', '钻孔1万', '钻孔5千', '隐蔽工程', '三区划分', '通风设施']
             if (arr) {
                 let res1 = await svc.cmdSwitchLayers(arr); // 调用唯杰服务切换图层，返回图层id {layerid： "xxxx"}
                 layer = res1.layerid
@@ -512,7 +512,7 @@
                     //     setTuCeng(brr)
                     // }, 2000)
                 }
-                // setTuCeng(brr)
+                setTuCeng(brr)
             })
             map.on("move", () => {
                 setCen = false
