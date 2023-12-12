@@ -7,9 +7,9 @@
     <link rel="stylesheet" type="text/css" href="https://vjmap.com/demo/js/vjmap/vjmap.min.css">
     <script type="text/javascript" src="https://vjmap.com/demo/js/vjmap/vjmap.min.js"></script>
     
-    <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <!-- <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script> -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css"> -->
     <style>
         * {
             margin: 0;
@@ -36,7 +36,9 @@
 <div id="map"></div>
 </body>
 <!-- <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script> -->
-<script src="https://gitee.com/dcloud/uni-app/raw/dev/dist/uni.webview.1.5.4.js"></script>
+<script>
+    !function(e,n){"object"==typeof exports&&"undefined"!=typeof module?module.exports=n():"function"==typeof define&&define.amd?define(n):(e=e||self).uni=n()}(this,(function(){"use strict";try{var e={};Object.defineProperty(e,"passive",{get:function(){!0}}),window.addEventListener("test-passive",null,e)}catch(e){}var n=Object.prototype.hasOwnProperty;function i(e,i){return n.call(e,i)}var t=[];function r(){return window.__dcloud_weex_postMessage||window.__dcloud_weex_}var o=function(e,n){var i={options:{timestamp:+new Date},name:e,arg:n};if(r()){if("postMessage"===e){var o={data:[n]};return window.__dcloud_weex_postMessage?window.__dcloud_weex_postMessage(o):window.__dcloud_weex_.postMessage(JSON.stringify(o))}var a={type:"WEB_INVOKE_APPSERVICE",args:{data:i,webviewIds:t}};window.__dcloud_weex_postMessage?window.__dcloud_weex_postMessageToService(a):window.__dcloud_weex_.postMessageToService(JSON.stringify(a))}if(!window.plus)return window.parent.postMessage({type:"WEB_INVOKE_APPSERVICE",data:i,pageId:""},"*");if(0===t.length){var d=plus.webview.currentWebview();if(!d)throw new Error("plus.webview.currentWebview() is undefined");var s=d.parent(),w="";w=s?s.id:d.id,t.push(w)}if(plus.webview.getWebviewById("__uniapp__service"))plus.webview.postMessageToUniNView({type:"WEB_INVOKE_APPSERVICE",args:{data:i,webviewIds:t}},"__uniapp__service");else{var u=JSON.stringify(i);plus.webview.getLaunchWebview().evalJS('UniPlusBridge.subscribeHandler("'.concat("WEB_INVOKE_APPSERVICE",'",').concat(u,",").concat(JSON.stringify(t),");"))}},a={navigateTo:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},n=e.url;o("navigateTo",{url:encodeURI(n)})},navigateBack:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},n=e.delta;o("navigateBack",{delta:parseInt(n)||1})},switchTab:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},n=e.url;o("switchTab",{url:encodeURI(n)})},reLaunch:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},n=e.url;o("reLaunch",{url:encodeURI(n)})},redirectTo:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},n=e.url;o("redirectTo",{url:encodeURI(n)})},getEnv:function(e){r()?e({nvue:!0}):window.plus?e({plus:!0}):e({h5:!0})},postMessage:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};o("postMessage",e.data||{})}},d=/uni-app/i.test(navigator.userAgent),s=/Html5Plus/i.test(navigator.userAgent),w=/complete|loaded|interactive/;var u=window.my&&navigator.userAgent.indexOf(["t","n","e","i","l","C","y","a","p","i","l","A"].reverse().join(""))>-1;var g=window.swan&&window.swan.webView&&/swan/i.test(navigator.userAgent);var v=window.qq&&window.qq.miniProgram&&/QQ/i.test(navigator.userAgent)&&/miniProgram/i.test(navigator.userAgent);var c=window.tt&&window.tt.miniProgram&&/toutiaomicroapp/i.test(navigator.userAgent);var m=window.wx&&window.wx.miniProgram&&/micromessenger/i.test(navigator.userAgent)&&/miniProgram/i.test(navigator.userAgent);var p=window.qa&&/quickapp/i.test(navigator.userAgent);var f=window.ks&&window.ks.miniProgram&&/micromessenger/i.test(navigator.userAgent)&&/miniProgram/i.test(navigator.userAgent);var l=window.tt&&window.tt.miniProgram&&/Lark|Feishu/i.test(navigator.userAgent);var _=window.jd&&window.jd.miniProgram&&/micromessenger/i.test(navigator.userAgent)&&/miniProgram/i.test(navigator.userAgent);var E=window.xhs&&window.xhs.miniProgram&&/xhsminiapp/i.test(navigator.userAgent);for(var h,P=function(){window.UniAppJSBridge=!0,document.dispatchEvent(new CustomEvent("UniAppJSBridgeReady",{bubbles:!0,cancelable:!0}))},b=[function(e){if(d||s)return window.__dcloud_weex_postMessage||window.__dcloud_weex_?document.addEventListener("DOMContentLoaded",e):window.plus&&w.test(document.readyState)?setTimeout(e,0):document.addEventListener("plusready",e),a},function(e){if(m)return window.WeixinJSBridge&&window.WeixinJSBridge.invoke?setTimeout(e,0):document.addEventListener("WeixinJSBridgeReady",e),window.wx.miniProgram},function(e){if(v)return window.QQJSBridge&&window.QQJSBridge.invoke?setTimeout(e,0):document.addEventListener("QQJSBridgeReady",e),window.qq.miniProgram},function(e){if(u){document.addEventListener("DOMContentLoaded",e);var n=window.my;return{navigateTo:n.navigateTo,navigateBack:n.navigateBack,switchTab:n.switchTab,reLaunch:n.reLaunch,redirectTo:n.redirectTo,postMessage:n.postMessage,getEnv:n.getEnv}}},function(e){if(g)return document.addEventListener("DOMContentLoaded",e),window.swan.webView},function(e){if(c)return document.addEventListener("DOMContentLoaded",e),window.tt.miniProgram},function(e){if(p){window.QaJSBridge&&window.QaJSBridge.invoke?setTimeout(e,0):document.addEventListener("QaJSBridgeReady",e);var n=window.qa;return{navigateTo:n.navigateTo,navigateBack:n.navigateBack,switchTab:n.switchTab,reLaunch:n.reLaunch,redirectTo:n.redirectTo,postMessage:n.postMessage,getEnv:n.getEnv}}},function(e){if(f)return window.WeixinJSBridge&&window.WeixinJSBridge.invoke?setTimeout(e,0):document.addEventListener("WeixinJSBridgeReady",e),window.ks.miniProgram},function(e){if(l)return document.addEventListener("DOMContentLoaded",e),window.tt.miniProgram},function(e){if(_)return window.JDJSBridgeReady&&window.JDJSBridgeReady.invoke?setTimeout(e,0):document.addEventListener("JDJSBridgeReady",e),window.jd.miniProgram},function(e){if(E)return window.xhs.miniProgram},function(e){return document.addEventListener("DOMContentLoaded",e),a}],y=0;y<b.length&&!(h=b[y](P));y++);h||(h={});var B="undefined"!=typeof uni?uni:{};if(!B.navigateTo)for(var S in h)i(h,S)&&(B[S]=h[S]);return B.webView=h,B}));
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.1/proj4-src.min.js"></script>
 <script>
     var fromProjection = "+proj=tmerc +lat_0=0 +lon_0=112.5 +k=1 +x_0=500000 +y_0=0 +ellps=krass +towgs84=15.8,-154.4,-82.3,0,0,0,0 +units=m +no_defs" ;
@@ -151,11 +153,14 @@
         }
     }
     // 设置地图显示范围
-    function setMapRadius (str) {
+    function setMapRadius (str, padding) {
         const obj = vjmap.GeoBounds.fromDataExtent(str)
+        padding = padding ? JSON.parse(padding) : 50
         // obj.max = proj4(toProjection,fromProjection,obj.max)
         // obj.min = proj4(toProjection,fromProjection,obj.min)
-        map.fitMapBounds(obj, {padding: 50});
+        map.fitMapBounds(obj, {
+            padding: padding
+        });
     }
     // 设置导航路径线
     var daohangLine = ""
@@ -197,7 +202,7 @@
         loadMap(obj.arr, obj.isRoadway)
         // loadOpenLayersMap()
     }
-    loadMap()
+    // loadMap()
 
     // 接受VUE页面发来的信息
     // window.addEventListener("message", function (event) {
@@ -334,27 +339,34 @@
             }
         },'*');
     });
-    
     function loadMap(arr, isRoadway) {
         (async () => {
-            
+            // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
+            svc = new vjmap.Service(serviceUrl, accessToken)
+            svc.addAccessKey(accessKey)
+            // 根据地图范围建立经纬度投影坐标系
+            let prj = new vjmap.LnglatProjection();
+            let tileUrl = ""
+            if (isRoadway == 1) {
+                tileUrl = ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"]
+            } else {
+                tileUrl = ["https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                        "https://webst02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                        "https://webst03.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                        "https://webst04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"]
+            }
+            console.log(tileUrl)
             // 地图对象
             map = new vjmap.Map({
                 container: 'map', // DIV容器ID
                 style: {
-                    version: 8,
-                    // version: svc.styleVersion(),
-                    // glyphs: svc.glyphsUrl(),
+                    // version: 8,
+                    version: svc.styleVersion(),
+                    glyphs: svc.glyphsUrl(),
                     sources: {
                         gaode: {
                             type: 'raster',
-                            tiles:  isRoadway == 1 ? [
-                                "https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
-                            ] :
-                            /* 如果用影像 */
-                            [
-                                "https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                            ],
+                            tiles:  tileUrl,
                         }
                     },
                     layers: [{
@@ -366,17 +378,15 @@
                 center: center,
                 zoom: 16,
                 pitch: 0,
+                maxZoom: 18,
                 pitchWithRotate: false, // 倾斜
                 dragRotate: false, // 拖动旋转
                 touchZoomRotate: true, // 捏合旋转和缩放
                 doubleClickZoom: false, // 双击缩放
                 renderWorldCopies: false // 不显示多屏地图
             });
-            // --高德地图与CAD图叠加[高德地图为底图]--高德地图与CAD图叠加，以高德地图为坐标系
-            svc = new vjmap.Service(serviceUrl, accessToken)
-            svc.addAccessKey(accessKey)
-            // 根据地图范围建立经纬度投影坐标系
-            let prj = new vjmap.LnglatProjection();
+            
+            
             
             // 关联服务对象和投影对象
             map.attach(svc, prj);
@@ -394,6 +404,7 @@
                 message.error(res.error)
             }
             let layer
+            // arr = ["0","图例","三线","积水区","周边矿井","采区划分","保安煤柱"]
             if (arr) {
                 let res1 = await svc.cmdSwitchLayers(arr); // 调用唯杰服务切换图层，返回图层id {layerid： "xxxx"}
                 layer = res1.layerid
@@ -445,8 +456,15 @@
                 }
             },'*');
 
-            
+            let type1 = 1
             map.on("click", (event) => {
+                // setCenter("116.207672,39.994943")
+                // if (type1 == 1) {
+                //     type1 = 2
+                // } else {
+                //     type1 = 1
+                // }
+                // setDitu(type1)
                 let point = map.fromLngLat(event.lngLat);
                 var transformPoint = proj4(toProjection,fromProjection,point);//[y,x,z]
                 console.log(point)
@@ -467,6 +485,10 @@
                         yuan = false
                     }
                 })
+                
+                // const str = `[[112.439027,35.45133],["112.43888","35.451419"],["112.438746","35.451272"],["112.438698","35.45125"],["112.438646","35.451241"],["112.438572","35.451241"],["112.438572","35.451241"],["112.438433","35.451285"],["112.438342","35.451332"],["112.437218","35.452018"],["112.437023","35.452166"],["112.436905","35.45227"],["112.436745","35.452431"],["112.436419","35.452865"],["112.436302","35.452964"],["112.436302","35.452964"],["112.436272","35.452995"],["112.436137","35.453103"],["112.435556","35.453481"],["112.435373","35.453563"],["112.4352","35.453628"],["112.434978","35.453672"],["112.434748","35.45372"],["112.434635","35.453759"],["112.434284","35.453906"],["112.433733","35.454149"],["112.433511","35.45424"],["112.43339","35.45428"],["112.433168","35.454319"],["112.432878","35.454345"],["112.432431","35.454392"],["112.432431","35.454392"],["112.431697","35.454475"],["112.431693","35.454475"],["112.431306","35.454431"],["112.431302","35.454427"],["112.430872","35.453689"],["112.430751","35.453455"],["112.430734","35.453411"],["112.430734","35.453381"],["112.43072","35.45332"],["112.43072","35.45332"],["112.430712","35.453203"],["112.430710","35.453201"]]`
+                // setMapRadius(str, '{"left":50,"right":50,"top":250,"bottom":200}')
+                // setdaohangLine(str, '#009EFF')
                 if (yuan) {
                     uni.postMessage({  
                         data: {  
@@ -478,7 +500,7 @@
                     });
                     // 点击位置添加标点
                     // setClickMarker([point.x, point.y])
-                    setCenter([point.x, point.y].toString(), 1)
+                    // setCenter([point.x, point.y].toString(), 1)
                     // setTimeout(() => {
                     //     let layers = svc.getMapLayers();
                     //     let brr = []
@@ -490,7 +512,7 @@
                     //     setTuCeng(brr)
                     // }, 2000)
                 }
-                
+                // setTuCeng(brr)
             })
             map.on("move", () => {
                 setCen = false
@@ -499,10 +521,11 @@
             let layers = svc.getMapLayers();
             let brr = []
             layers.map((item) => {
-                // if (brr.length < 10) {
+                if (!item.isOff) {
                     brr.push(item.name)
-                // }
+                }
             })
+            console.log(layers)
             // console.log(brr)
             // setTuCeng(brr)
             uni.postMessage({  
@@ -552,22 +575,17 @@
     }
     function setDitu (isRoadway) {
         const style = map.getStyle()
-        const tileUrl = svc.webMapUrl({
-            tileCrs: "gcj02",
-            tileUrl: "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
-            tileSize: 256,
-            tileRetina: 1,
-            tileShards: "1,2,3,4",
-            tileToken: "",
-            tileFlipY: false
-        })
+        let tileUrl = ""
         if (isRoadway == 1) {
-            style.sources.gaode.tiles = [tileUrl]
+            tileUrl = ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"]
         } else {
-            style.sources.gaode.tiles = [
-                "https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"
-            ]
+            tileUrl = ["https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                    "https://webst02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                    "https://webst03.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+                    "https://webst04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"]
         }
+       
+        style.sources.gaode.tiles = tileUrl
         map.setStyle(style)
     }
     
