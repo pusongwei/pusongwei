@@ -136,7 +136,7 @@
             peopleMarker.setLngLat(center)
         }
     }
-    // 设置地图中心
+    // 设置当前人位置
     function setPeopleMarker(str) {
         center = str.split(",")
         if (!peopleMarker) {
@@ -526,6 +526,14 @@
             })
             map.on("move", () => {
                 setCen = false
+                uni.postMessage({  
+                data: {  
+                    action: {
+                        type: 5,
+                        data: 1
+                    }
+                }  
+            });
             })
 
             let layers = svc.getMapLayers();
