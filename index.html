@@ -526,14 +526,16 @@
             })
             map.on("move", () => {
                 setCen = false
+            })
+            map.on("touchstart", () => {
                 uni.postMessage({  
-                data: {  
-                    action: {
-                        type: 5,
-                        data: 1
-                    }
-                }  
-            });
+                    data: {  
+                        action: {
+                            type: 5,
+                            data: 1
+                        }
+                    }  
+                });
             })
 
             let layers = svc.getMapLayers();
