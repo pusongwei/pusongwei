@@ -41,7 +41,7 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.1/proj4-src.min.js"></script>
 <script>
-    var fromProjection = "+proj=tmerc +lat_0=0 +lon_0=112.5 +k=1 +x_0=500000 +y_0=0 +ellps=krass +towgs84=15.8,-154.4,-82.3,0,0,0,0 +units=m +no_defs" ;
+    var fromProjection = "+proj=tmerc +lat_0=0 +lon_0=112.5 +k=1 +x_0=500000 +y_0=0 +ellps=krass +towgs84=12.1575,-159.86,-82.3,0,0,0,0 +units=m +no_defs" ;
     var toProjection ="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
     // proj4(fromProjection,toProjection,[491278.162,3938380.151,648]);//[y,x,z]
     var first = 1
@@ -212,7 +212,7 @@
         loadMap(obj.arr, obj.isRoadway)
         // loadOpenLayersMap()
     }
-    // loadMap()
+    loadMap()
 
     // 接受VUE页面发来的信息
     // window.addEventListener("message", function (event) {
@@ -389,6 +389,7 @@
                 zoom: 16,
                 pitch: 0,
                 maxZoom: 18,
+                optimizeForTerrain : true,
                 pitchWithRotate: false, // 倾斜
                 dragRotate: false, // 拖动旋转
                 touchZoomRotate: true, // 捏合旋转和缩放
@@ -421,6 +422,7 @@
             } else {
                 layer = res.layer;//图层样式名
             }
+            
             // 增加cad的wms图层
             let wmsUrl = svc.wmsTileUrl({
                 mapid: mapId, // 地图id
@@ -429,7 +431,7 @@
                 crs: fromProjection,
                 webMapType: "GCJ02" // 底图是高德地图，所以要选GCJ02,如果是天地图，可以不用填此项
             })
-
+            
            
             map.addSource('wms-test-source', {
                 'type': 'raster',
@@ -477,7 +479,7 @@
                 // setDitu(type1)
                 let point = map.fromLngLat(event.lngLat);
                 var transformPoint = proj4(toProjection,fromProjection,point);//[y,x,z]
-                console.log(point)
+                console.log(event)
                 // 向父vue页面发送信息
                 // window.parent.postMessage({
                 //     params: {
@@ -495,6 +497,9 @@
                         yuan = false
                     }
                 })
+
+                var elevation = map.Elevation
+                console.log(getAtPoint.getAtPoint([point.x, point.y]))
                 
                 // const str = `[[112.439027,35.45133],["112.43888","35.451419"],["112.438746","35.451272"],["112.438698","35.45125"],["112.438646","35.451241"],["112.438572","35.451241"],["112.438572","35.451241"],["112.438433","35.451285"],["112.438342","35.451332"],["112.437218","35.452018"],["112.437023","35.452166"],["112.436905","35.45227"],["112.436745","35.452431"],["112.436419","35.452865"],["112.436302","35.452964"],["112.436302","35.452964"],["112.436272","35.452995"],["112.436137","35.453103"],["112.435556","35.453481"],["112.435373","35.453563"],["112.4352","35.453628"],["112.434978","35.453672"],["112.434748","35.45372"],["112.434635","35.453759"],["112.434284","35.453906"],["112.433733","35.454149"],["112.433511","35.45424"],["112.43339","35.45428"],["112.433168","35.454319"],["112.432878","35.454345"],["112.432431","35.454392"],["112.432431","35.454392"],["112.431697","35.454475"],["112.431693","35.454475"],["112.431306","35.454431"],["112.431302","35.454427"],["112.430872","35.453689"],["112.430751","35.453455"],["112.430734","35.453411"],["112.430734","35.453381"],["112.43072","35.45332"],["112.43072","35.45332"],["112.430712","35.453203"],["112.430710","35.453201"]]`
                 // setMapRadius(str, '{"left":50,"right":50,"top":250,"bottom":200}')
