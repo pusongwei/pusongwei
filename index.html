@@ -358,14 +358,10 @@
             let prj = new vjmap.LnglatProjection();
             let tileUrl = ""
             if (isRoadway == 1) {
-                tileUrl = ["https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"]
+                tileUrl = ["https://t3.tianditu.gov.cn/DataServer?T=vec_w&X={x}&Y={y}&L={z}&tk=7baeffb96bf61861b302d0f963cfda66"]
             } else {
-                tileUrl = ["https://webst01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                        "https://webst02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                        "https://webst03.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                        "https://webst04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}"]
+                tileUrl = ["https://t3.tianditu.gov.cn/DataServer?T=img_w&X={x}&Y={y}&L={z}&tk=7baeffb96bf61861b302d0f963cfda66"]
             }
-            console.log(tileUrl)
             // 地图对象
             map = new vjmap.Map({
                 container: 'map', // DIV容器ID
@@ -374,15 +370,23 @@
                     version: svc.styleVersion(),
                     glyphs: svc.glyphsUrl(),
                     sources: {
-                        gaode: {
+                      tdt1: {
                             type: 'raster',
                             tiles:  tileUrl,
-                        }
+                        },
+                        tdt2: {
+                          type: 'raster',
+                          tiles: ["https://t3.tianditu.gov.cn/DataServer?T=cva_w&X={x}&Y={y}&L={z}&tk=7baeffb96bf61861b302d0f963cfda66"],
+                      }
                     },
                     layers: [{
-                        id: 'gaode',
+                        id: 'tdt1',
                         type: 'raster',
-                        source: 'gaode',
+                        source: 'tdt1',
+                    },{
+                        id: 'tdt2',
+                        type: 'raster',
+                        source: 'tdt2',
                     }]
                 },
                 center: center,
@@ -428,8 +432,7 @@
                 mapid: mapId, // 地图id
                 layers: layer, // 图层名称
                 srs: "EPSG:3857",
-                crs: fromProjection,
-                webMapType: "GCJ02" // 底图是高德地图，所以要选GCJ02,如果是天地图，可以不用填此项
+                crs: fromProjection
             })
             
            
@@ -549,7 +552,6 @@
                     brr.push(item.name)
                 }
             })
-            console.log(layers)
             // console.log(brr)
             // setTuCeng(brr)
             uni.postMessage({  
